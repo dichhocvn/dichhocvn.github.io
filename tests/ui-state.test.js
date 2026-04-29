@@ -140,5 +140,61 @@ module.exports = [
       assert.equal(context.window._searchResults.length, 0);
     },
   },
+  {
+    name: "ui-state: lapLaSo uses lyso API mode and skips local render",
+    fn: () => {
+      const els = {
+        err: { style: {}, textContent: "" },
+        lasoWrap: { style: { display: "none" }, scrollIntoView() {} },
+      };
+
+      let renderLysoCalls = 0;
+      let computeCalls = 0;
+      let renderCalls = 0;
+      const context = {
+        window: {
+          _currentTab: "AL",
+          _searchResults: [],
+        },
+        document: {
+          getElementById(id) {
+            return els[id] || { value: "", style: {} };
+          },
+        },
+        isLysoTemplateActive() {
+          return true;
+        },
+        renderLysoFromCurrentInputs() {
+          renderLysoCalls++;
+          return true;
+        },
+        TUVI_LOGIC: {
+          compute() {
+            computeCalls++;
+            return { meta: {}, cung: [] };
+          },
+        },
+        TUVI_RENDER: {
+          render() {
+            renderCalls++;
+          },
+        },
+        requestAnimationFrame(fn) {
+          fn();
+        },
+        applyResponsiveLayout() {},
+      };
+      context._searchResults = context.window._searchResults;
+
+      const code = fs.readFileSync(path.join(ROOT, "src/js/app/controller-core.js"), "utf8");
+      vm.runInNewContext(code, context, { filename: "controller-core.js" });
+
+      context.lapLaSo();
+      assert.equal(renderLysoCalls, 1);
+      assert.equal(computeCalls, 0);
+      assert.equal(renderCalls, 0);
+      assert.equal(els.lasoWrap.style.display, "block");
+    },
+  },
 ];
 
