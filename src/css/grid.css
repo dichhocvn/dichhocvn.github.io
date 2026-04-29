@@ -1,0 +1,637 @@
+    /* ── Ô cung — flex dọc 3 vùng ──────────────────────────── */
+    .cung {
+      background: var(--color-bg-cung);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      width: 4.3cm;
+      min-height: 5.7cm;
+    }
+
+    /* Nén text dọc 85% cho toàn bộ nội dung trong cung */
+    .cung-top,
+    .cung-mid,
+    .cung-bot {}
+
+    .cung.menh {
+      background: var(--color-bg-cung);
+    }
+
+    .cung.than {
+      background: var(--color-bg-cung);
+    }
+
+    /* ── ScaleY text trong cung ───────────────────────────────── */
+
+    /* ── TOP: header — 12px ─────────────────────────────────── */
+    .cung-top {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0;
+      padding: 10px 3px 4px;
+      flex-shrink: 0;
+      background: var(--color-bg-cung);
+    }
+
+    .top-chi {
+      font-size: var(--fs-header);
+      font-weight: bold;
+      color: var(--color-chi);
+      width: 30%;
+      flex-shrink: 0;
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .top-ten {
+      font-size: var(--fs-header);
+      color: var(--color-ten-cung);
+      font-weight: bold;
+      width: 40%;
+      flex-shrink: 0;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      letter-spacing: .3px;
+    }
+
+    .top-dh {
+      font-family: Arial, sans-serif;
+      font-size: var(--fs-header);
+      color: var(--color-dai-van);
+      font-weight: bold;
+      white-space: nowrap;
+      text-align: right;
+      width: 30%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+      position: relative;
+    }
+
+    .top-thang {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      z-index: 2;
+      white-space: nowrap;
+    }
+
+    .top-thang-inner {
+      display: inline-block;
+      background: none;
+      color: #000;
+      border-radius: 3px;
+      padding: 1px 3px;
+      font-size: calc(var(--fs-header) - 1px);
+      line-height: 1.3;
+      font-weight: bold;
+    }
+
+    /* Badge mệnh/thân */
+    .badge {
+      display: inline-block;
+      font-size: 7px;
+      font-weight: bold;
+      padding: 0 3px;
+      border-radius: 2px;
+      line-height: 13px;
+      vertical-align: middle;
+      margin-left: 3px;
+    }
+
+    .badge-m {
+      background: #c8960a;
+      color: #fff;
+    }
+
+    .badge-t {
+      background: #2980b9;
+      color: #fff;
+    }
+
+    /* ── MIDDLE: chính tinh (2 hàng) + cát/hung (2 cột) ────── */
+    .cung-mid {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2px 3px;
+    }
+
+    /* Khu chính tinh — 2 hàng cố định 20px, căn giữa */
+    .mid-chinh {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .mid-cathung-wrap {
+      margin-top: 5px;
+    }
+
+    .chinh-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 0.8em;
+    }
+
+    .chinh-empty {
+      display: block;
+      width: 100%;
+      min-height: 0.8em;
+    }
+
+    /* Khu cát/hung — 2 cột song song, gap 10px */
+    .mid-cathung {
+      flex: 1;
+      display: flex;
+      gap: 10px;
+      overflow: hidden;
+      min-height: 0;
+      margin-top: 2px;
+    }
+
+    .col-cat {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .col-hung {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ── Sao ────────────────────────────────────────────────── */
+    .sao-chinh {
+      font-family: var(--font-family);
+      font-size: var(--fs-chinh);
+      font-weight: bold;
+      color: var(--color-chinh);
+      display: block;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: .3px;
+    }
+
+    .sao-cat {
+      font-size: var(--fs-sao);
+      color: var(--color-cat);
+      display: block;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .sao-cat.bold {
+      font-weight: bold;
+    }
+
+    .sao-hung {
+      font-size: var(--fs-sao);
+      color: var(--color-hung);
+      display: block;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .sao-hung.bold {
+      font-weight: bold;
+    }
+
+    .sao-trung {
+      font-size: var(--fs-sao);
+      color: #4a3010;
+      display: block;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    /* Fix: sup tag bên trong gradient text cần reset fill color */
+    .sao-chinh sup,
+    .sao-cat sup,
+    .sao-hung sup {
+      -webkit-text-fill-color: initial;
+      background: none;
+    }
+
+    /* sucManh inline — cùng font-size với sao, cùng hàng */
+    .sm-inline {
+      font-size: inherit;
+      margin-left: 1px;
+    }
+
+
+
+    /* ── BOTTOM: footer — 12px ──────────────────────────────── */
+    .cung-bot {
+      display: flex;
+      align-items: flex-end;
+      padding: 4px 3px 10px;
+      flex-shrink: 0;
+      background: var(--color-bg-cung);
+    }
+
+    /* Vị trí 7 (trái): 30% căn trái */
+    .bot-dv {
+      width: 100%;
+      flex-shrink: 0;
+      text-align: left;
+      font-size: var(--fs-footer);
+      font-weight: bold;
+    }
+
+    .bot-dv-inner {
+      display: inline-block;
+      background: #1565c0;
+      color: #fff;
+      border-radius: 3px;
+      padding: 1px 3px;
+      font-size: calc(var(--fs-footer) - 1px);
+      line-height: 1.3;
+    }
+
+    .bot-left-col {
+      width: 30%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 1px;
+    }
+
+    .bot-ln {
+      width: 100%;
+      text-align: right;
+      font-size: calc(var(--fs-footer) - 1px);
+    }
+
+    .bot-ln-inner {
+      display: inline-block;
+      background: #6a1b9a;
+      color: #fff;
+      border-radius: 3px;
+      padding: 1px 3px;
+      line-height: 1.3;
+    }
+
+    /* Vị trí 8 (giữa): 60% căn giữa */
+    .bot-ts {
+      flex: 1;
+      text-align: center;
+      font-size: var(--fs-footer);
+      color: var(--color-truong-sinh);
+      font-weight: bold;
+      overflow: hidden;
+    }
+
+    /* Sao lưu đại vận */
+    .sao-dv-luu {
+      font-size: var(--fs-sao);
+      color: #1565c0;
+      font-weight: bold;
+      display: block;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    /* Vị trí 9 (phải): 30% căn phải */
+    .bot-dh {
+      width: 30%;
+      flex-shrink: 0;
+      text-align: right;
+      font-size: var(--fs-footer);
+      color: var(--color-dai-van);
+      font-weight: bold;
+    }
+
+    .bot-right-col {
+      width: 30%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+      gap: 1px;
+    }
+
+    .bot-ln {
+      text-align: right;
+    }
+
+    .bot-ln-inner {
+      display: inline-block;
+      background: #6a1b9a;
+      color: #fff;
+      border-radius: 3px;
+      padding: 1px 3px;
+      font-size: calc(var(--fs-footer) - 1px);
+      line-height: 1.3;
+      font-weight: bold;
+    }
+
+    .bot-thang {
+      display: none;
+    }
+
+    /* ── Highlight khi click ─────────────────────────────────── */
+    .cung {
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+    }
+
+    .cung.hl-selected,
+    .cung.hl-doi,
+    .cung.hl-tamhop {
+      background: #f0f0f0;
+      border-color: #999;
+    }
+
+    .cung.hl-selected .cung-top,
+    .cung.hl-doi .cung-top,
+    .cung.hl-tamhop .cung-top,
+    .cung.hl-selected .cung-bot,
+    .cung.hl-doi .cung-bot,
+    .cung.hl-tamhop .cung-bot {
+      background: #f0f0f0;
+    }
+
+    .center {
+      background: var(--color-bg-cung);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 8px;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .center-bg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .center-bg svg {
+      width: 88%;
+      height: 88%;
+      opacity: 0.10;
+    }
+
+    .center>*:not(.center-bg) {
+      position: relative;
+      z-index: 1;
+    }
+
+    .c-name {
+      font-size: 13px;
+      font-weight: bold;
+      color: #4a2e08;
+      margin-bottom: 4px;
+    }
+
+    .c-hr {
+      width: 70%;
+      border: none;
+      border-top: 1px solid #c8b88a;
+      margin: 3px auto;
+    }
+
+    .c-table {
+      font-size: 13px;
+      color: #1a1008;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .c-table td {
+      padding: 1px 3px;
+    }
+
+    .c-lbl {
+      color: #7a5c2a;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .c-cuc {
+      font-size: 13px;
+      font-weight: bold;
+      color: #8b0000;
+      margin: 4px 0;
+    }
+
+    /* ── Legend ─────────────────────────────────────────────── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      font-size: 10px;
+      margin-top: 8px;
+      color: #5c3d10;
+    }
+
+    .leg {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .leg-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* ── Pill Triệt ─────────────────────────────────────────── */
+    .triet-pill {
+      position: absolute;
+      background: #1a1008;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+
+      white-space: nowrap;
+      border-radius: 3px;
+      z-index: 10;
+      pointer-events: none;
+      padding: 2px 8px;
+      transform: translate(-50%, -65%);
+    }
+
+    .tuan-pill {
+      position: absolute;
+      background: #1a1008;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+
+      white-space: nowrap;
+      border-radius: 3px;
+      z-index: 10;
+      pointer-events: none;
+      padding: 2px 8px;
+      transform: translate(-50%, -65%);
+    }
+
+    .tuantriet-pill {
+      position: absolute;
+      background: #1a1008;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+
+      white-space: nowrap;
+      border-radius: 3px;
+      z-index: 10;
+      pointer-events: none;
+      padding: 2px 8px;
+      transform: translate(-50%, -65%);
+    }
+
+    .luu-triet-pill {
+      position: absolute;
+      background: #1a1008;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      white-space: nowrap;
+      border-radius: 3px;
+      z-index: 10;
+      pointer-events: none;
+      padding: 2px 8px;
+      transform: translate(-50%, -65%);
+    }
+
+    .luu-tuan-pill {
+      position: absolute;
+      background: #1a1008;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      white-space: nowrap;
+      border-radius: 3px;
+      z-index: 10;
+      pointer-events: none;
+      padding: 2px 8px;
+      transform: translate(-50%, -65%);
+    }
+
+    .han-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding-top: 3px;
+      margin-bottom: 8px;
+      font-family: Arial, sans-serif;
+    }
+
+    .han-nav-check-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: #4a2e08;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .han-nav-check-input {
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+      accent-color: #8b5e1a;
+    }
+
+    .han-nav-divider {
+      color: #c8b88a;
+      font-size: 16px;
+    }
+
+    .han-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .han-nav-controls-gio {
+      gap: 6px;
+    }
+
+    .han-nav-arrow-btn {
+      width: 26px;
+      height: 26px;
+      border: 1px solid #c8b88a;
+      border-radius: 50%;
+      background: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      line-height: 1;
+      color: #4a2e08;
+    }
+
+    .han-nav-nam {
+      font-size: 13px;
+      font-weight: bold;
+      color: #4a2e08;
+      min-width: 72px;
+      text-align: center;
+    }
+
+    .han-nav-gio {
+      font-size: 13px;
+      font-weight: bold;
+      color: #4a2e08;
+      min-width: 92px;
+      text-align: center;
+    }
+
+
+    /* ── Nút xuất prompt ──────────────────────────────────────── */
+
+    @media (max-width: 768px) {
+      body[data-layout="mobile"] .grid-scaler-outer {
+        padding: 0;
+      }
+
+      body[data-layout="mobile"] .laso-wrap {
+        padding-top: 4px;
+      }
+
+      body[data-layout="mobile"] #hanNavBar {
+        gap: 8px !important;
+        padding: 0 4px;
+      }
+
+      body[data-layout="mobile"] #namNavControls,
+      body[data-layout="mobile"] #gioNavControls {
+        gap: 4px !important;
+      }
+
+      body[data-layout="mobile"] #chkXemHanLabel {
+        white-space: nowrap;
+      }
+    }

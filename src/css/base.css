@@ -1,0 +1,129 @@
+    /* ── CSS Variables (cấu hình) ───────────────────────────── */
+    :root {
+      --font-family: Arial, sans-serif;
+      --fs-chinh: 13px;
+      --fs-sao: 11px;
+      --fs-header: 11px;
+      --fs-footer: 11px;
+
+      --color-chinh: #8b0000;
+      --color-cat: #1a5c00;
+      --color-hung: #7a2000;
+      --color-chi: #4a2e08;
+      --color-ten-cung: #4a2e08;
+      --color-dai-van: #000;
+      --color-truong-sinh: #000;
+      --color-bg-cung: #fff;
+      --color-bg-page: #fff;
+      --color-border: #4a2e08;
+      --mono-mode: 0;
+    }
+
+    /* ── Reset ──────────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg-page);
+      color: #1a1008;
+      min-height: 100vh;
+      padding: 2px;
+    }
+
+    .page {
+      width: 100%;
+    }
+
+    /* ── Layout 2 cột khi đủ rộng ───────────────────────────── */
+    .main-layout {
+      display: flex;
+      gap: 0;
+      align-items: flex-start;
+    }
+
+    .col-chat {
+      display: none;
+      flex-direction: column;
+      width: 340px;
+      min-width: 200px;
+      max-width: 600px;
+      flex-shrink: 0;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      border: 1px solid #c8b88a;
+      border-radius: 6px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: #fff;
+    }
+
+    .col-chat.visible {
+      display: flex;
+    }
+
+    .col-laso {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ── Form area trong col-chat (desktop) ─────────────────── */
+    #formArea {
+      flex-shrink: 0;
+      border-bottom: 1px solid #c8b88a;
+      overflow-y: auto;
+      max-height: 58vh;
+    }
+
+    /* ── Chế độ mobile (≤768px): ẩn thanh bên trái, chỉ hiện lá số ── */
+    /* ── Chế độ desktop (>768px): hiện cả col-chat (trái) + col-laso ── */
+    @media (max-width: 768px) {
+      .col-chat {
+        display: none !important;  /* mobile: ẩn hoàn toàn thanh bên trái */
+      }
+
+      .separator {
+        display: none !important;  /* mobile: ẩn handle resize */
+      }
+
+      .col-laso {
+        width: 100% !important;    /* mobile: col-laso chiếm toàn màn hình */
+      }
+    }
+
+    /* ── Separator (resize handle) ──────────────────────────── */
+    .separator {
+      width: 6px;
+      cursor: col-resize;
+      background: #e8dcc8;
+      border-radius: 3px;
+      flex-shrink: 0;
+      align-self: stretch;
+      display: none;
+      position: relative;
+    }
+
+    .separator.visible {
+      display: block;
+    }
+
+    .separator:hover,
+    .separator.dragging {
+      background: #c8a870;
+    }
+
+    .separator::after {
+      content: '⋮';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #a08060;
+      font-size: 14px;
+    }

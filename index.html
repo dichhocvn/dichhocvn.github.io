@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lá Số Tử Vi Đẩu Số</title>
+    <link rel="stylesheet" href="src/styles.css">
+</head>
+
+<body data-layout="desktop">
+  <div class="page">
+    <div class="main-layout" id="mainLayout">
+
+      <!-- Thanh bên trái: chỉ hiện ở chế độ desktop -->
+      <div class="col-chat" id="colChat">
+        <!-- Form area: tab + form nhập + cfgPanel sẽ được JS move vào đây khi desktop -->
+        <div id="formArea"></div>
+        <!-- Chatbot -->
+        <div class="chat-panel">
+          <div class="chat-apikey">
+            <label>API Key:</label>
+            <input type="password" id="apiKey" placeholder="sk-ant-api03-..." autocomplete="off">
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-msg assistant">Xin chào! Tôi có thể giúp bạn luận giải lá số Tử Vi. Hãy lập lá số trước rồi
+              đặt câu hỏi nhé.</div>
+          </div>
+          <div class="chat-input-row">
+            <textarea id="chatInput" placeholder="Nhập câu hỏi… (Enter gửi, Shift+Enter xuống dòng)"
+              onkeydown="chatKeyDown(event)"></textarea>
+            <button class="chat-send" id="chatSend" onclick="sendChat()">Gửi</button>
+          </div>
+          <div style="padding:4px 8px 8px;display:flex;gap:6px;flex-wrap:wrap">
+            <button id="skillMenh" onclick="sendChat(SKILL_CUNG_MENH)"
+              style="font-size:11px;padding:4px 10px;border:1px solid #8b5e1a;background:#fffbf2;color:#4a2e08;border-radius:4px;cursor:pointer;">
+              🔍 Luận cung Mệnh
+            </button>
+          </div>
+        </div>
+        <button id="chatToggleBtn" class="chat-toggle-btn" onclick="toggleChatbotVisibility()">Hiện chatbot</button>
+      </div>
+
+      <!-- Separator -->
+      <div class="separator" id="separator"></div>
+
+      <!-- Lá số: hiện ở cả mobile lẫn desktop -->
+      <div class="col-laso" id="colLaso">
+        <!-- Vùng form: tab + inputs + cfgPanel — mobile: nằm ở đây; desktop: bị JS move sang col-chat -->
+        <div id="formAreaLaso">
+          <!-- Tab chọn loại lịch -->
+          <div class="tab-bar">
+            <button id="tabAL" class="tab-btn tab-active" onclick="switchTab('AL')">Âm lịch</button>
+            <button id="tabDL" class="tab-btn" onclick="switchTab('DL')">Dương lịch</button>
+            <button id="tabSEARCH" class="tab-btn" onclick="switchTab('SEARCH')">Tìm lá số</button>
+            <button id="tabCFG" class="tab-btn" onclick="switchTab('CFG')">⚙ Cấu hình</button>
+          </div>
+
+          <div class="form-wrap" id="formWrap">
+            <div class="fg"><label>Họ và tên</label>
+              <input id="hoTen" type="text" placeholder="Nhập họ tên…">
+            </div>
+            <!-- Âm lịch fields -->
+            <div class="fg al-field"><label>Ngày ÂL</label>
+              <input id="ngay" type="number" min="1" max="30" value="5">
+            </div>
+            <div class="fg al-field"><label>Tháng ÂL</label>
+              <input id="thang" type="number" min="1" max="12" value="9">
+            </div>
+            <div class="fg al-field"><label>Năm ÂL</label>
+              <input id="nam" type="number" value="1993">
+            </div>
+            <!-- Dương lịch fields -->
+            <div class="fg dl-field" style="display:none"><label>Ngày DL</label>
+              <input id="ngayDL" type="number" min="1" max="31" value="11">
+            </div>
+            <div class="fg dl-field" style="display:none"><label>Tháng DL</label>
+              <input id="thangDL" type="number" min="1" max="12" value="11">
+            </div>
+            <div class="fg dl-field" style="display:none"><label>Năm DL</label>
+              <input id="namDL" type="number" value="1993">
+            </div>
+            <!-- Kết quả quy đổi -->
+            <div class="fg dl-field" style="display:none;grid-column:1/-1">
+              <div id="dlResult" style="font-size:11px;color:#5c3d10;padding:4px 0;min-height:18px;"></div>
+            </div>
+
+            <div class="fg"><label>Giờ sinh (HH:MM)</label>
+              <input id="gio" type="text" value="04:00" oninput="syncGioToGioXem()">
+            </div>
+            <div class="fg"><label>Giới tính</label>
+              <select id="gt">
+                <option value="nam">Nam</option>
+                <option value="nu">Nữ</option>
+              </select>
+            </div>
+            <div class="fg">
+              <button class="btn" onclick="lapLaSo()">Lập lá số</button>
+            </div>
+          </div>
+          <div class="err" id="err"></div>
+
+          <!-- Panel tìm kiếm lá số -->
+          <div id="searchPanel"
+            style="display:none;background:#fff;border:1px solid #c8b88a;border-radius:6px;padding:14px;margin-bottom:12px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end;">
+              <div class="fg">
+                <label>Từ ngày DL</label>
+                <input id="searchFromDate" type="text" placeholder="dd/mm/yyyy">
+              </div>
+              <div class="fg">
+                <label>Đến ngày DL</label>
+                <input id="searchToDate" type="text" placeholder="dd/mm/yyyy">
+              </div>
+              <div class="fg">
+                <label>Giới tính</label>
+                <select id="searchGt">
+                  <option value="nam">Nam</option>
+                  <option value="nu">Nữ</option>
+                </select>
+              </div>
+
+              <div class="fg" style="grid-column:1/-1">
+                <label>Chính tinh cung Mệnh (khớp chính xác, có thể chọn nhiều)</label>
+                <div id="searchChinhTinhList"
+                  style="display:flex;flex-wrap:wrap;gap:6px;border:1px solid #c8b88a;border-radius:4px;background:#fdfaf4;padding:8px;"></div>
+                <div style="font-size:11px;color:#7a5c2a;margin-top:4px;">Bấm vào tổ hợp để bật/tắt.</div>
+              </div>
+              <div class="fg" style="grid-column:1/-1">
+                <div style="font-size:11px;color:#7a5c2a;">Giờ sinh: hệ thống tự quét toàn bộ 12 giờ.</div>
+              </div>
+
+              <div class="fg">
+                <label>Cát tinh (bản cung + đối + tam hợp)</label>
+                <select id="searchCatMode">
+                  <option value="min2">Có tối thiểu hai cát tinh</option>
+                  <option value="any" selected>Không quan trọng</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Tuần/Triệt</label>
+                <select id="searchTuanTrietMode">
+                  <option value="none">Không bị tuần hoặc triệt</option>
+                  <option value="any" selected>Không quan trọng</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Hung tinh (bản cung + đối + tam hợp)</label>
+                <select id="searchHungMode">
+                  <option value="max2">Có tối đa hai hung tinh</option>
+                  <option value="any" selected>Không quan trọng</option>
+                </select>
+              </div>
+              <div class="fg">
+                <button class="btn" onclick="searchLaSo()">Tìm lá số</button>
+              </div>
+            </div>
+
+            <div id="searchResultSection">
+              <div id="searchStatus" style="font-size:12px;color:#5c3d10;margin-top:8px;"></div>
+              <div id="searchResultList" style="margin-top:10px;display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+          </div>
+
+          <!-- Panel cấu hình -->
+          <div id="cfgPanel"
+            style="display:none;background:#fff;border:1px solid #c8b88a;border-radius:6px;padding:14px;margin-bottom:12px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+
+              <!-- Template màu -->
+              <div class="fg">
+                <label>Template màu</label>
+                <select onchange="applyTemplate(this.value)">
+                  <option value="classic">Cổ điển (hiện tại)</option>
+                  <option value="mono">Đơn sắc (không màu)</option>
+                  <option value="dark">Tối</option>
+                  <option value="pastel">Nhạt</option>
+                </select>
+              </div>
+
+              <!-- Font family -->
+              <div class="fg">
+                <label>Font chữ</label>
+                <select data-var="--font-family" onchange="setCssVar('--font-family', this.value)">
+                  <option value="Arial, sans-serif">Arial</option>
+                  <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                  <option value="'Georgia', serif">Georgia</option>
+                  <option value="'Palatino', serif">Palatino</option>
+                  <option value="'Verdana', sans-serif">Verdana</option>
+                </select>
+              </div>
+
+              <!-- Font size chính tinh -->
+              <div class="fg">
+                <label>Cỡ chữ chính tinh</label>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <input type="range" min="9" max="20" value="13" data-var="--fs-chinh"
+                    oninput="setCssVar('--fs-chinh',this.value+'px');this.nextElementSibling.textContent=this.value+'px'"
+                    style="flex:1">
+                  <span style="min-width:32px;font-size:11px">13px</span>
+                </div>
+              </div>
+
+              <!-- Font size sao khác -->
+              <div class="fg">
+                <label>Cỡ chữ cát/hung tinh</label>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <input type="range" min="8" max="16" value="11" data-var="--fs-sao"
+                    oninput="setCssVar('--fs-sao',this.value+'px');this.nextElementSibling.textContent=this.value+'px'"
+                    style="flex:1">
+                  <span style="min-width:32px;font-size:11px">11px</span>
+                </div>
+              </div>
+
+              <!-- Font size header/footer -->
+              <div class="fg">
+                <label>Cỡ chữ header/footer</label>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <input type="range" min="8" max="16" value="11" data-var="--fs-header"
+                    oninput="setCssVar('--fs-header',this.value+'px');setCssVar('--fs-footer',this.value+'px');this.nextElementSibling.textContent=this.value+'px'"
+                    style="flex:1">
+                  <span style="min-width:32px;font-size:11px">11px</span>
+                </div>
+              </div>
+
+              <!-- Màu background ô cung -->
+              <div class="fg">
+                <label>Màu nền ô cung</label>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <input type="color" data-var="--color-bg-cung" value="#ffffff"
+                    oninput="setCssVar('--color-bg-cung',this.value)"
+                    style="width:40px;height:28px;padding:2px;border:1px solid #c8b88a;border-radius:3px;">
+                  <input type="text" value="#ffffff"
+                    oninput="setCssVar('--color-bg-cung',this.value);this.previousElementSibling.value=this.value"
+                    style="flex:1;font-size:11px;">
+                </div>
+              </div>
+
+              <!-- Màu background trang -->
+              <div class="fg">
+                <label>Màu nền trang</label>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <input type="color" data-var="--color-bg-page" value="#ffffff"
+                    oninput="setCssVar('--color-bg-page',this.value)"
+                    style="width:40px;height:28px;padding:2px;border:1px solid #c8b88a;border-radius:3px;">
+                  <input type="text" value="#ffffff"
+                    oninput="setCssVar('--color-bg-page',this.value);this.previousElementSibling.value=this.value"
+                    style="flex:1;font-size:11px;">
+                </div>
+              </div>
+
+              <!-- Màu chính tinh -->
+              <div class="fg">
+                <label>Màu chính tinh</label>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <input type="color" data-var="--color-chinh" value="#8b0000"
+                    oninput="setCssVar('--color-chinh',this.value)"
+                    style="width:40px;height:28px;padding:2px;border:1px solid #c8b88a;border-radius:3px;">
+                  <input type="text" value="#8b0000"
+                    oninput="setCssVar('--color-chinh',this.value);this.previousElementSibling.value=this.value"
+                    style="flex:1;font-size:11px;">
+                </div>
+              </div>
+
+              <!-- Màu cát tinh -->
+              <div class="fg">
+                <label>Màu cát tinh</label>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <input type="color" data-var="--color-cat" value="#1a5c00"
+                    oninput="setCssVar('--color-cat',this.value)"
+                    style="width:40px;height:28px;padding:2px;border:1px solid #c8b88a;border-radius:3px;">
+                  <input type="text" value="#1a5c00"
+                    oninput="setCssVar('--color-cat',this.value);this.previousElementSibling.value=this.value"
+                    style="flex:1;font-size:11px;">
+                </div>
+              </div>
+
+              <!-- Màu hung tinh -->
+              <div class="fg">
+                <label>Màu hung tinh</label>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <input type="color" data-var="--color-hung" value="#7a2000"
+                    oninput="setCssVar('--color-hung',this.value)"
+                    style="width:40px;height:28px;padding:2px;border:1px solid #c8b88a;border-radius:3px;">
+                  <input type="text" value="#7a2000"
+                    oninput="setCssVar('--color-hung',this.value);this.previousElementSibling.value=this.value"
+                    style="flex:1;font-size:11px;">
+                </div>
+              </div>
+
+              <!-- Màu border lá số -->
+              <div class="fg">
+                <label>Màu viền lá số</label>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <input type="color" data-var="--color-border" value="#4a2e08"
+                    oninput="setCssVar('--color-border',this.value)"
+                    style="width:40px;height:28px;padding:2px;border:1px solid #c8b88a;border-radius:3px;">
+                  <input type="text" value="#4a2e08"
+                    oninput="setCssVar('--color-border',this.value);this.previousElementSibling.value=this.value"
+                    style="flex:1;font-size:11px;">
+                </div>
+              </div>
+
+              <!-- Reset -->
+              <div class="fg" style="display:flex;align-items:flex-end;">
+                <button class="btn" onclick="resetConfig()" style="background:#888;border-color:#888;">↺ Reset mặc
+                  định</button>
+              </div>
+
+            </div>
+          </div>
+        </div><!-- end formAreaLaso -->
+
+        <!-- Lá số -->
+        <div class="laso-wrap" id="lasoWrap">
+          <!-- <div class="ls-title" id="lsTitle">LÁ SỐ TỬ VI ĐẨU SỐ</div> -->
+          <div class="grid-scaler-outer" id="gridScalerOuter">
+            <div class="grid-scaler" id="gridScaler">
+              <div class="grid" id="grid"></div>
+            </div>
+          </div>
+          <div id="searchResultNav" class="search-result-nav">
+            <button class="btn nav-btn nav-btn-prev" onclick="openPrevSearchResult()"><span class="nav-icon">◀</span><span class="nav-label"> Lá số trước</span></button>
+            <div id="searchResultPos" class="search-result-pos">0/0</div>
+            <button class="btn nav-btn nav-btn-next" onclick="openNextSearchResult()"><span class="nav-label">Lá số kế tiếp </span><span class="nav-icon">▶</span></button>
+            <button class="btn nav-btn nav-btn-list" onclick="openSearchResultDialog()" title="Danh sách lá số">☰</button>
+          </div>
+          <!-- Năm xem hạn & Giờ xem hạn -->
+          <div id="hanNavBar" class="han-nav-bar">
+            <label id="chkXemHanLabel" class="han-nav-check-label">
+              <input type="checkbox" id="chkXemHan" onchange="onNamXemChange()"
+                class="han-nav-check-input">
+              Xem hạn
+            </label>
+            <span class="han-nav-divider">|</span>
+            <div id="namNavControls" class="han-nav-controls">
+              <button id="btnNamXemPrev" onclick="changeNamXem(-1)"
+                class="han-nav-arrow-btn">‹</button>
+              <span id="namXem" data-val="0" class="han-nav-nam">Năm hạn</span>
+              <button id="btnNamXemNext" onclick="changeNamXem(1)"
+                class="han-nav-arrow-btn">›</button>
+            </div>
+            <span class="han-nav-divider">|</span>
+            <!-- Giờ xem -->
+            <div id="gioNavControls" class="han-nav-controls han-nav-controls-gio">
+              <button id="btnGioXemPrev" onclick="changeGioXem(-1)"
+                class="han-nav-arrow-btn">‹</button>
+              <span id="gioXem" data-val="" class="han-nav-gio">—</span>
+              <button id="btnGioXemNext" onclick="changeGioXem(1)"
+                class="han-nav-arrow-btn">›</button>
+            </div>
+          </div>
+
+          <!-- Chế độ an sao lưu -->
+          <div id="luuModeBar"
+            style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:8px;font-family:Arial,sans-serif;background:#f5f0e8;border-radius:8px;padding:4px 8px;">
+            <span style="font-size:11px;color:#7a5c2a;margin-right:4px;">Sao lưu:</span>
+            <label
+              style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;padding:4px 8px;border-radius:6px;"
+              id="luuModeLabel0">
+              <input type="radio" name="luuMode" value="dv" onchange="onNamXemChange()"
+                style="accent-color:#8b5e1a;cursor:pointer;"> Đại vận
+            </label>
+            <label
+              style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;padding:4px 8px;border-radius:6px;"
+              id="luuModeLabel1">
+              <input type="radio" name="luuMode" value="ln" onchange="onNamXemChange()"
+                style="accent-color:#8b5e1a;cursor:pointer;"> Lưu niên
+            </label>
+            <label
+              style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;padding:4px 8px;border-radius:6px;"
+              id="luuModeLabel2">
+              <input type="radio" name="luuMode" value="qt" checked onchange="onNamXemChange()"
+                style="accent-color:#8b5e1a;cursor:pointer;"> Quan trọng
+            </label>
+            <label
+              style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;padding:4px 8px;border-radius:6px;"
+              id="luuModeLabel3">
+              <input type="radio" name="luuMode" value="all" onchange="onNamXemChange()"
+                style="accent-color:#8b5e1a;cursor:pointer;"> Tất cả
+            </label>
+          </div>
+
+          <div class="legend">
+            <span class="leg"><span class="leg-dot" style="background:#8b0000"></span>Chính tinh</span>
+            <span class="leg"><span class="leg-dot" style="background:#1a5c00"></span>Cát tinh</span>
+            <span class="leg"><span class="leg-dot" style="background:#7a2000"></span>Hung tinh</span>
+            <span class="leg"><span style="font-size:10px;color:#c8960a;font-weight:bold">M</span> Miếu</span>
+            <span class="leg"><span style="font-size:10px;color:#2e7d32;font-weight:bold">V</span> Vượng</span>
+            <span class="leg"><span style="font-size:10px;color:#5c3d10;font-weight:bold">B</span> Bình</span>
+            <span class="leg"><span style="font-size:10px;color:#aaa;font-weight:bold">H</span> Hãm</span>
+            <span class="leg" style="margin-left:8px;border-left:1px solid #ccc;padding-left:8px">
+              <span
+                style="display:inline-block;width:10px;height:10px;background:#f0f0f0;border:1px solid #999;margin-right:3px"></span>Tam
+              phương tứ chính
+            </span>
+          </div>
+          <button class="btn-prompt" onclick="exportPrompt()">📋 Xuất Prompt</button>
+        </div>
+
+        <div id="searchResultMobileDock" style="display:none;"></div>
+
+      </div><!-- end col-laso -->
+
+    </div><!-- end main-layout -->
+  </div><!-- end .page -->
+
+  <!-- ── Prompt Export Modal ───────────────────────────────────── -->
+  <div class="prompt-overlay" id="promptOverlay" onclick="closePromptModal(event)">
+    <div class="prompt-modal">
+      <div class="prompt-modal-header">
+        <h3>📋 Xuất Prompt Lá Số Tử Vi</h3>
+        <button class="prompt-modal-close" onclick="closePromptModalDirect()">✕</button>
+      </div>
+      <div class="prompt-tabs">
+        <button class="prompt-tab active" id="ptabText" onclick="switchPromptTab('text')">📝 Text mô tả</button>
+        <button class="prompt-tab" id="ptabJsonFmt" onclick="switchPromptTab('jsonfmt')">{ } JSON lá số</button>
+      </div>
+
+      <!-- Options (chỉ hiện khi tab text) -->
+      <div class="prompt-options" id="promptOptions">
+        <div class="prompt-opt-group">
+          <label class="group-label">Đại vận</label>
+          <label class="radio-label"><input type="radio" name="optDV" value="none"> Không xuất</label>
+          <label class="radio-label"><input type="radio" name="optDV" value="current" checked> Đại vận hiện tại</label>
+          <label class="radio-label"><input type="radio" name="optDV" value="all"> Toàn bộ</label>
+        </div>
+        <div class="prompt-opt-group">
+          <label class="group-label">Xem hạn (lưu niên)</label>
+          <label class="radio-label"><input type="radio" name="optLN" value="none"> Không xuất</label>
+          <label class="radio-label"><input type="radio" name="optLN" value="near" checked> ±3 năm quanh năm hiện tại</label>
+          <label class="radio-label"><input type="radio" name="optLN" value="all"> Toàn bộ 90 năm</label>
+        </div>
+      </div>
+      <div class="prompt-body">
+        <textarea class="prompt-output" id="promptOutput" readonly></textarea>
+        <div class="prompt-actions">
+          <button class="prompt-copy-btn" id="promptCopyBtn" onclick="copyPrompt()">📋 Sao chép</button>
+          <span style="flex:1"></span>
+          <span style="font-size:11px;color:#888;align-self:center" id="promptCharCount"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-overlay" id="ruleOverlay" onclick="closeRuleModal(event)">
+    <div class="rule-modal">
+      <div class="rule-modal-header">
+        <div class="rule-modal-title" id="ruleModalTitle">Luận cung</div>
+        <button class="rule-modal-close" onclick="closeRuleModalDirect()">✕</button>
+      </div>
+      <div class="rule-modal-body" id="ruleModalBody"></div>
+    </div>
+  </div>
+
+  <div class="rule-overlay" id="searchProgressOverlay">
+    <div class="rule-modal" style="width:min(560px,94vw);">
+      <div class="rule-modal-header">
+        <div class="rule-modal-title">Đang tìm lá số</div>
+        <button class="rule-modal-close" onclick="cancelSearchLaSo()">✕</button>
+      </div>
+      <div class="rule-modal-body">
+        <div id="searchProgressText" style="margin-bottom:8px;color:#5c3d10;">Đang chuẩn bị...</div>
+        <div style="width:100%;height:10px;background:#f0e8d8;border-radius:999px;overflow:hidden;">
+          <div id="searchProgressBar" style="height:100%;width:0%;background:#8b5e1a;"></div>
+        </div>
+        <div id="searchProgressMeta" style="margin-top:8px;font-size:12px;color:#7a5c2a;">0 / 0</div>
+        <div style="margin-top:12px;">
+          <button class="btn" style="max-width:180px;" onclick="cancelSearchLaSo()">Ngắt tìm kiếm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-overlay" id="searchResultOverlay" onclick="closeSearchResultDialog(event)">
+    <div class="rule-modal" style="width:min(760px,96vw);max-height:84vh;">
+      <div class="rule-modal-header">
+        <div class="rule-modal-title">Danh sách lá số thỏa mãn</div>
+        <button class="rule-modal-close" onclick="closeSearchResultDialogDirect()">✕</button>
+      </div>
+      <div class="rule-modal-body">
+        <div id="searchResultOverlayBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- html2canvas để lưu ảnh -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Inline scripts -->
+  <script src="src/js/core/data.js"></script>
+  <script src="src/js/core/logic.js"></script>
+  <script src="src/js/rules/rules-data.js"></script>
+  <script src="src/js/render/tuvi-render.js"></script>
+
+  <script src="src/js/app/controller-core.js"></script>
+  <script src="src/js/features/autocompute.js"></script>
+  <script src="src/js/features/image-export.js"></script>
+  <script src="src/js/features/layout-scale.js"></script>
+  <script src="src/js/features/layout-responsive.js"></script>
+  <script src="src/js/features/layout-resize.js"></script>
+  <script src="src/js/features/chatbot.js"></script>
+  <script src="src/js/features/lunar-calendar.js"></script>
+  <script src="src/js/features/search-laso.js"></script>
+  <script src="src/js/features/tab-switching.js"></script>
+  <script src="src/js/features/theme-config.js"></script>
+  <script src="src/js/features/han-controls.js"></script>
+  <script src="src/js/features/gio-controls.js"></script>
+  <script src="src/js/features/prompt-export.js"></script>
+
+
+</body>
+
+</html>
