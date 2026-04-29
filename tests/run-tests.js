@@ -3,6 +3,7 @@ const suites = [
   ...require("./calendar.test"),
   ...require("./logic.test"),
   ...require("./stars.test"),
+  ...require("./search-laso-counts.test"),
   ...require("./ui-state.test"),
 ];
 

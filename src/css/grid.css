@@ -3,9 +3,11 @@
       background: var(--color-bg-cung);
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: visible;
       width: 4.3cm;
       min-height: 5.7cm;
+      position: relative;
+      z-index: 1;
     }
 
     /* Nén text dọc 85% cho toàn bộ nội dung trong cung */
@@ -38,8 +40,8 @@
       font-size: var(--fs-header);
       font-weight: bold;
       color: var(--color-chi);
-      width: 30%;
-      flex-shrink: 0;
+      width: 26%;
+      flex: 0 0 26%;
       text-align: left;
       overflow: hidden;
     }
@@ -48,12 +50,16 @@
       font-size: var(--fs-header);
       color: var(--color-ten-cung);
       font-weight: bold;
-      width: 40%;
-      flex-shrink: 0;
+      flex: 0 1 48%;
+      width: 48%;
+      min-width: 0;
       text-align: center;
       white-space: nowrap;
-      overflow: hidden;
-      letter-spacing: .3px;
+      overflow: visible;
+      text-overflow: clip;
+      letter-spacing: 0;
+      position: relative;
+      z-index: 4;
     }
 
     .top-dh {
@@ -63,13 +69,15 @@
       font-weight: bold;
       white-space: nowrap;
       text-align: right;
-      width: 30%;
-      flex-shrink: 0;
+      width: 26%;
+      flex: 0 0 26%;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       gap: 1px;
       position: relative;
+      z-index: 2;
+      overflow: hidden;
     }
 
     .top-thang {
@@ -127,6 +135,9 @@
       display: flex;
       flex-direction: column;
       gap: 2px;
+      position: relative;
+      z-index: 6;
+      overflow: visible;
     }
 
     .mid-cathung-wrap {
@@ -139,6 +150,9 @@
       justify-content: center;
       text-align: center;
       min-height: 0.8em;
+      position: relative;
+      z-index: 7;
+      overflow: visible;
     }
 
     .chinh-empty {
@@ -152,7 +166,7 @@
       flex: 1;
       display: flex;
       gap: 10px;
-      overflow: hidden;
+      overflow: visible;
       min-height: 0;
       margin-top: 2px;
     }
@@ -160,11 +174,13 @@
     .col-cat {
       flex: 1;
       min-width: 0;
+      overflow: visible;
     }
 
     .col-hung {
       flex: 1;
       min-width: 0;
+      overflow: visible;
     }
 
     /* ── Sao ────────────────────────────────────────────────── */
@@ -187,7 +203,7 @@
       display: block;
       line-height: 1.3;
       white-space: nowrap;
-      overflow: hidden;
+      overflow: visible;
       text-align: left;
     }
 
@@ -198,11 +214,14 @@
     .sao-hung {
       font-size: var(--fs-sao);
       color: var(--color-hung);
-      display: block;
+      display: table;
       line-height: 1.3;
       white-space: nowrap;
-      overflow: hidden;
-      text-align: left;
+      overflow: visible;
+      max-width: none;
+      margin-left: auto;
+      padding-right: 2px;
+      text-align: right;
     }
 
     .sao-hung.bold {

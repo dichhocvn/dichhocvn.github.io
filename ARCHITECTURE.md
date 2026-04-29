@@ -10,12 +10,12 @@
 - Nhan mui ten gio + nhay ngay/thang/nam AL + init ngay/gio hien tai AL/DL (gio nav doc lap voi xem han) -> `src/js/features/gio-controls.js`
 - Nam xem han -> `src/js/features/han-controls.js`
 - Prompt export/JSON export -> `src/js/features/prompt-export.js`
-- Tab tìm kiếm lá số theo khoảng ngày `dd/mm/yyyy` + bộ lọc sao + quét toàn bộ 12 giờ + Tuần/Triệt chỉ tại Mệnh + nav `a/b` + auto clear kết quả khi rời Search hoặc bấm Lập lá số + dialog lỗi validate trên desktop (message plain, không đánh số) -> `src/js/features/search-laso.js`
+- Tab tìm kiếm lá số theo khoảng ngày `dd/mm/yyyy` + quét toàn bộ 12 giờ + nav `a/b` + auto clear kết quả khi rời Search hoặc bấm Lập lá số + dialog lỗi validate trên desktop (message plain, không đánh số) + item kết quả có cát/hung mục tiêu (hung gồm Hóa Kỵ; so sánh theo `name` có dấu + lowercase, chỉ bỏ marker miếu/vượng/đắc/hãm; regex marker M/V/B/H áp dụng theo token rời để không sót sao), hiển thị chủ tinh kèm `(M/V/B/H)`, giờ sinh dạng khoảng (`1h-3h`), badge Tuần/Triệt nền đen và trừ 20 điểm cát khí khi có Tuần hoặc Triệt tại Mệnh, Cô/Quả (chỉ hiện khi có); sort theo điểm giảm dần rồi gần ngày bắt đầu; hỗ trợ chọn tất cả/bỏ chọn tất cả tổ hợp chính tinh Mệnh; đã bỏ filter phụ Cát/Hung/Tuần-Triệt khỏi UI -> `src/js/features/search-laso.js`
 - Chatbot (desktop đang ẩn; nút dưới cùng cột trái hiện trạng thái disabled, chưa cho bật lại) -> `src/js/features/chatbot.js`
 - CSS layout co ban (toàn page padding 2px; desktop khi chatbot ẩn thì formArea chiếm full chiều cao còn lại) -> `src/css/base.css`
 - CSS chat -> `src/css/chat.css`
 - CSS form/tab/grid wrapper (search nav class-based + responsive + margin-bottom 2px cho grid mobile; tab panel full-height trên desktop khi chatbot ẩn; tab bar sticky trên desktop khi cuộn form) -> `src/css/forms.css`
-- CSS grid cung/sao/highlight/pill (han-nav class-based + responsive) -> `src/css/grid.css`
+- CSS grid cung/sao/highlight/pill (han-nav class-based + responsive; tăng z-index khu chính tinh, chỉnh header vị trí 1/3 cân nhau để vị trí 2 centered; cát tinh cho phép overflow, sao hung vị trí 6 căn phải theo cạnh nội dung, một dòng và tràn về bên trái để đủ chữ) -> `src/css/grid.css`
 - CSS modal prompt/rule -> `src/css/modals.css`
 
 ## Definition of Done (docs sync)

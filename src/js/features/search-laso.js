@@ -3,6 +3,9 @@
   const CHI = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tị', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
   const GIO_QUET = ['23:00', '01:00', '03:00', '05:00', '07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00'];
   const SEARCH_MAX_DAYS = 3660;
+  const CAT_TINH_TARGETS = new Set(['thiên khôi', 'thiên việt', 'văn xương', 'văn khúc', 'hóa lộc', 'hóa quyền', 'hóa khoa', 'tả phụ', 'hữu bật']);
+  const HUNG_TINH_TARGETS = new Set(['linh tinh', 'hỏa tinh', 'kình dương', 'đà la', 'địa không', 'địa kiếp', 'hóa kỵ']);
+  const CO_QUA_TARGETS = new Set(['cô thần', 'quả tú']);
   let _searchInitDone = false;
   let _searchCancelled = false;
   let _searchRunning = false;
@@ -42,6 +45,13 @@
     const m = String(obj.mm).padStart(2, '0');
     const y = String(obj.yy);
     return `${d}/${m}/${y}`;
+  }
+  function gioRangeLabel(gio) {
+    const hour = Number(String(gio || '').split(':')[0]);
+    if (!Number.isFinite(hour)) return String(gio || '');
+    const start = ((hour % 24) + 24) % 24;
+    const end = (start + 2) % 24;
+    return `${start}h-${end}h`;
   }
 
   function mainStarOptions() {
@@ -168,11 +178,39 @@
     }));
     return n;
   }
+  function normalizeStarName(name) {
+    return String(name || '')
+      .replace(/^(ĐV\.|L\.)\s*/i, '')
+      .replace(/\([^)]*\)/g, ' ')
+      .replace(/\b(miếu|vượng|đắc|hãm|mieu|vuong|dac|ham)\b/gi, ' ')
+      .replace(/(?:^|\s)[mvbh](?=\s|$)/gi, ' ')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  function countByNameSet(cungs, targetNames) {
+    let n = 0;
+    cungs.forEach(c => c.sao.forEach((s) => {
+      if (targetNames.has(normalizeStarName(s.name))) n++;
+    }));
+    return n;
+  }
+  function hasAnyNameInSet(cungs, targetNames) {
+    return cungs.some(c => c.sao.some(s => targetNames.has(normalizeStarName(s.name))));
+  }
+  function calcCatKhiScore(catCount, hungCount) {
+    const total = catCount + hungCount;
+    if (total <= 0) return 50;
+    return Math.round((catCount / total) * 100);
+  }
 
-  function hasTuanTrietAtMenh(laso, menhChi) {
+  function tuanTrietFlagsAtMenh(laso, menhChi) {
     const triet = laso.meta.viTriTriet || [];
     const tuan = laso.meta.viTriTuan || [];
-    return [...triet, ...tuan].includes(menhChi);
+    return {
+      hasTriet: triet.includes(menhChi),
+      hasTuan: tuan.includes(menhChi),
+    };
   }
   function updateResultNavPosition() {
     const pos = document.getElementById('searchResultPos');
@@ -206,6 +244,12 @@
     return Array.from(document.querySelectorAll('.search-chip[data-value].active'))
       .map(el => el.dataset.value || '')
       .filter(Boolean);
+  }
+  function selectAllMainChips() {
+    document.querySelectorAll('.search-chip[data-value]').forEach((chip) => chip.classList.add('active'));
+  }
+  function clearMainChips() {
+    document.querySelectorAll('.search-chip[data-value]').forEach((chip) => chip.classList.remove('active'));
   }
   function toggleMainChip(value) {
     const esc = (window.CSS && typeof window.CSS.escape === 'function') ? window.CSS.escape(value) : value.replace(/"/g, '\\"');
@@ -245,8 +289,23 @@
     }
     list.innerHTML = results.map((r, idx) => `
       <div onclick="openSearchResult(${idx})" style="border:1px solid ${idx === _currentResultIdx ? '#8b5e1a' : '#d8c9a8'};border-radius:8px;padding:10px;background:${idx === _currentResultIdx ? '#fff3da' : '#fff'};cursor:pointer;">
-        <div style="font-weight:bold;color:#4a2e08;">#${idx + 1} • ${ddmmyyyy(r.solar)} DL • ${r.gender === 'nam' ? 'Nam' : 'Nữ'}</div>
-        <div style="font-size:12px;color:#5c3d10;margin-top:4px;">ÂL: ${String(r.lunar.ngay).padStart(2, '0')}/${String(r.lunar.thang).padStart(2, '0')}/${r.lunar.nam} • Mệnh: ${r.menhMain}</div>
+        <div style="display:flex;gap:10px;align-items:stretch;">
+          <div style="flex:0 0 80%;min-width:0;">
+            <div style="font-weight:bold;color:#4a2e08;">#${idx + 1} • ${ddmmyyyy(r.solar)} DL • ${gioRangeLabel(r.gio)}</div>
+            <div style="font-size:12px;color:#5c3d10;margin-top:4px;">ÂL: ${String(r.lunar.ngay).padStart(2, '0')}/${String(r.lunar.thang).padStart(2, '0')}/${r.lunar.nam} • Mệnh: ${r.menhMainWithStrength}</div>
+            <div style="font-size:12px;color:#5c3d10;margin-top:5px;">
+              Cát tinh: <b>${r.catCountTarget}</b> • Hung tinh: <b>${r.hungCountTarget}</b>
+            </div>
+            ${(r.hasTuanAtMenh || r.hasTrietAtMenh) ? `<div style="display:flex;gap:6px;margin-top:5px;">${r.hasTuanAtMenh ? '<span style="background:#111;color:#fff;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;">Tuần</span>' : ''}${r.hasTrietAtMenh ? '<span style="background:#111;color:#fff;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;">Triệt</span>' : ''}</div>` : ''}
+            ${r.hasCoQuaToaOrChieu ? '<div style="font-size:12px;color:#b00020;font-weight:700;margin-top:4px;">Cô quả chiếu mệnh</div>' : ''}
+          </div>
+          <div style="flex:0 0 20%;display:flex;align-items:center;justify-content:center;border-left:1px dashed #d8c9a8;">
+            <div style="text-align:center;line-height:1.25;">
+              <div style="font-size:11px;color:#7a5c2a;">Cát khí</div>
+              <div style="font-weight:700;font-size:18px;color:${r.catKhiScore >= 70 ? '#1a5c00' : (r.catKhiScore <= 35 ? '#7a2000' : '#8b5e1a')};">${r.catKhiScore}</div>
+            </div>
+          </div>
+        </div>
       </div>
     `).join('');
     if (nav) nav.style.display = results.length > 0 ? 'flex' : 'none';
@@ -262,9 +321,6 @@
       to: parseDateInput('searchToDate'),
       gt: document.getElementById('searchGt')?.value || 'nam',
       chinhValues: selectedMainValues(),
-      catMode: document.getElementById('searchCatMode')?.value || 'any',
-      tuanTrietMode: document.getElementById('searchTuanTrietMode')?.value || 'any',
-      hungMode: document.getElementById('searchHungMode')?.value || 'any',
     };
   }
 
@@ -342,22 +398,15 @@
 
           const catCount = countByType(info.cungRelated, 'cat');
           const hungCount = countByType(info.cungRelated, 'hung', new Set(['Triệt']));
-          const hasTT = hasTuanTrietAtMenh(laso, info.menhChi);
+          const ttFlags = tuanTrietFlagsAtMenh(laso, info.menhChi);
 
-          if (cfg.catMode === 'min2' && catCount < 2) {
-            updateProgress(checked, total, hits.length);
-            continue;
-          }
-          if (cfg.hungMode === 'max2' && hungCount > 2) {
-            updateProgress(checked, total, hits.length);
-            continue;
-          }
-          if (cfg.tuanTrietMode === 'none' && hasTT) {
-            updateProgress(checked, total, hits.length);
-            continue;
-          }
-
-          const mainNames = info.menh.sao.filter(s => s.type === 'chinh').map(s => s.name).join(' - ') || 'Vô chính diệu';
+          const mainStars = info.menh.sao.filter(s => s.type === 'chinh');
+          const mainNames = mainStars.map(s => s.name).join(' - ') || 'Vô chính diệu';
+          const mainNamesWithStrength = mainStars.map(s => `${s.name} (${s.sucManh || 'B'})`).join(' - ') || 'Vô chính diệu';
+          const catCountTarget = countByNameSet(info.cungRelated, CAT_TINH_TARGETS);
+          const hungCountTarget = countByNameSet(info.cungRelated, HUNG_TINH_TARGETS);
+          const scoreBase = calcCatKhiScore(catCountTarget, hungCountTarget);
+          const scorePenalty = (ttFlags.hasTuan || ttFlags.hasTriet) ? 20 : 0;
           hits.push({
             solar: { dd, mm, yy },
             lunar,
@@ -365,13 +414,27 @@
             gio,
             laso,
             menhMain: mainNames,
+            menhMainWithStrength: mainNamesWithStrength,
             catCount,
             hungCount,
+            catCountTarget,
+            hungCountTarget,
+            hasTuanAtMenh: ttFlags.hasTuan,
+            hasTrietAtMenh: ttFlags.hasTriet,
+            hasCoQuaToaOrChieu: hasAnyNameInSet(info.cungRelated, CO_QUA_TARGETS),
+            catKhiScore: Math.max(0, scoreBase - scorePenalty),
           });
           updateProgress(checked, total, hits.length);
           if (checked % 24 === 0) await new Promise(r => setTimeout(r, 0));
         }
       }
+
+      hits.sort((a, b) => {
+        if (b.catKhiScore !== a.catKhiScore) return b.catKhiScore - a.catKhiScore;
+        const ta = new Date(a.solar.yy, a.solar.mm - 1, a.solar.dd).getTime();
+        const tb = new Date(b.solar.yy, b.solar.mm - 1, b.solar.dd).getTime();
+        return ta - tb;
+      });
 
       window._searchResults = hits;
       renderResults(hits);
@@ -438,12 +501,6 @@
       });
       if (!chips.some(ch => ch.classList.contains('active')) && chips[0]) chips[0].classList.add('active');
     }
-    const catMode = document.getElementById('searchCatMode');
-    const tuanTrietMode = document.getElementById('searchTuanTrietMode');
-    const hungMode = document.getElementById('searchHungMode');
-    if (catMode) catMode.value = 'any';
-    if (tuanTrietMode) tuanTrietMode.value = 'any';
-    if (hungMode) hungMode.value = 'any';
     syncSearchResultPlacement();
     window.addEventListener('resize', syncSearchResultPlacement);
     ['hoTen', 'ngay', 'thang', 'nam', 'ngayDL', 'thangDL', 'namDL', 'gio', 'gt'].forEach(id => {
@@ -461,6 +518,8 @@
   };
   window.syncSearchResultPlacement = syncSearchResultPlacement;
   window.toggleMainChip = toggleMainChip;
+  window.selectAllMainChips = selectAllMainChips;
+  window.clearMainChips = clearMainChips;
   window.openSearchResultDialog = function openSearchResultDialog() {
     const ov = document.getElementById('searchResultOverlay');
     if (!ov) return;

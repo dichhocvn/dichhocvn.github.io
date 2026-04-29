@@ -122,6 +122,10 @@
 
               <div class="fg" style="grid-column:1/-1">
                 <label>Chính tinh cung Mệnh (khớp chính xác, có thể chọn nhiều)</label>
+                <div style="display:flex;gap:6px;margin-bottom:6px;">
+                  <button type="button" class="btn" style="max-width:140px;padding:5px 8px;font-size:12px;" onclick="selectAllMainChips()">Chọn tất cả</button>
+                  <button type="button" class="btn" style="max-width:140px;padding:5px 8px;font-size:12px;background:#9b875b;border-color:#9b875b;" onclick="clearMainChips()">Bỏ chọn tất cả</button>
+                </div>
                 <div id="searchChinhTinhList"
                   style="display:flex;flex-wrap:wrap;gap:6px;border:1px solid #c8b88a;border-radius:4px;background:#fdfaf4;padding:8px;"></div>
                 <div style="font-size:11px;color:#7a5c2a;margin-top:4px;">Bấm vào tổ hợp để bật/tắt.</div>
@@ -130,27 +134,6 @@
                 <div style="font-size:11px;color:#7a5c2a;">Giờ sinh: hệ thống tự quét toàn bộ 12 giờ.</div>
               </div>
 
-              <div class="fg">
-                <label>Cát tinh (bản cung + đối + tam hợp)</label>
-                <select id="searchCatMode">
-                  <option value="min2">Có tối thiểu hai cát tinh</option>
-                  <option value="any" selected>Không quan trọng</option>
-                </select>
-              </div>
-              <div class="fg">
-                <label>Tuần/Triệt</label>
-                <select id="searchTuanTrietMode">
-                  <option value="none">Không bị tuần hoặc triệt</option>
-                  <option value="any" selected>Không quan trọng</option>
-                </select>
-              </div>
-              <div class="fg">
-                <label>Hung tinh (bản cung + đối + tam hợp)</label>
-                <select id="searchHungMode">
-                  <option value="max2">Có tối đa hai hung tinh</option>
-                  <option value="any" selected>Không quan trọng</option>
-                </select>
-              </div>
               <div class="fg">
                 <button class="btn" onclick="searchLaSo()">Tìm lá số</button>
               </div>
