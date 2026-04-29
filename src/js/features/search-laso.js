@@ -2,6 +2,17 @@
 (function () {
   const CHI = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tị', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
   const GIO_QUET = ['23:00', '01:00', '03:00', '05:00', '07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00'];
+  const SEARCH_MAX_DAYS = 3660;
+  const SEARCH_ABNORMAL_CASES = [
+    { id: 'missing-from', text: 'Thiếu ngày bắt đầu (Từ ngày DL).' },
+    { id: 'missing-to', text: 'Thiếu ngày kết thúc (Đến ngày DL).' },
+    { id: 'invalid-from', text: 'Ngày bắt đầu sai định dạng hoặc không tồn tại (ví dụ 31/02/2026).' },
+    { id: 'invalid-to', text: 'Ngày kết thúc sai định dạng hoặc không tồn tại (ví dụ 31/02/2026).' },
+    { id: 'reversed-range', text: 'Ngày kết thúc nhỏ hơn ngày bắt đầu.' },
+    { id: 'range-too-large', text: `Khoảng ngày quá lớn (>${SEARCH_MAX_DAYS} ngày).` },
+    { id: 'missing-main-stars', text: 'Chưa chọn tổ hợp chính tinh cung Mệnh.' },
+    { id: 'invalid-gender', text: 'Giá trị giới tính không hợp lệ (khác Nam/Nữ).' },
+  ];
   let _searchInitDone = false;
   let _searchCancelled = false;
   let _searchRunning = false;
@@ -95,6 +106,42 @@
   function setStatus(text) {
     const el = document.getElementById('searchStatus');
     if (el) el.textContent = text;
+  }
+  function renderAbnormalCaseList() {
+    const list = document.getElementById('searchAbnormalCasesList');
+    if (!list) return;
+    list.innerHTML = SEARCH_ABNORMAL_CASES
+      .map((item, idx) => `<li>${idx + 1}. ${item.text}</li>`)
+      .join('');
+  }
+  function validateSearchConfig(cfg) {
+    const problems = [];
+    if (!cfg.rawFrom) problems.push('missing-from');
+    else if (!cfg.from) problems.push('invalid-from');
+    if (!cfg.rawTo) problems.push('missing-to');
+    else if (!cfg.to) problems.push('invalid-to');
+    if (cfg.from && cfg.to && cfg.from > cfg.to) problems.push('reversed-range');
+    if (!cfg.chinhValues.length) problems.push('missing-main-stars');
+    if (!['nam', 'nu'].includes(cfg.gt)) problems.push('invalid-gender');
+    let dayCount = 0;
+    if (cfg.from && cfg.to && cfg.from <= cfg.to) {
+      dayCount = Math.floor((cfg.to - cfg.from) / (24 * 3600 * 1000)) + 1;
+      if (dayCount > SEARCH_MAX_DAYS) problems.push('range-too-large');
+    }
+    return { problems, dayCount };
+  }
+  function firstProblemMessage(problemId, dayCount) {
+    switch (problemId) {
+      case 'missing-from': return '⚠ Vui lòng nhập Từ ngày DL.';
+      case 'missing-to': return '⚠ Vui lòng nhập Đến ngày DL.';
+      case 'invalid-from': return '⚠ Từ ngày DL không hợp lệ. Dùng dd/mm/yyyy hoặc yyyy-mm-dd.';
+      case 'invalid-to': return '⚠ Đến ngày DL không hợp lệ. Dùng dd/mm/yyyy hoặc yyyy-mm-dd.';
+      case 'reversed-range': return '⚠ Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.';
+      case 'missing-main-stars': return '⚠ Hãy chọn ít nhất 1 tổ hợp chính tinh cung Mệnh.';
+      case 'invalid-gender': return '⚠ Giới tính không hợp lệ. Vui lòng chọn Nam hoặc Nữ.';
+      case 'range-too-large': return `⚠ Khoảng ngày quá lớn (${dayCount} ngày). Vui lòng thu hẹp <= ${SEARCH_MAX_DAYS} ngày.`;
+      default: return '⚠ Điều kiện tìm kiếm không hợp lệ.';
+    }
   }
 
   function menhInfo(laso) {
@@ -203,6 +250,8 @@
 
   function currentSearchConfig() {
     return {
+      rawFrom: (document.getElementById('searchFromDate')?.value || '').trim(),
+      rawTo: (document.getElementById('searchToDate')?.value || '').trim(),
       from: parseDateInput('searchFromDate'),
       to: parseDateInput('searchToDate'),
       gt: document.getElementById('searchGt')?.value || 'nam',
@@ -237,21 +286,12 @@
   window.searchLaSo = async function searchLaSo() {
     if (_searchRunning) return;
     const cfg = currentSearchConfig();
-    if (!cfg.from || !cfg.to || cfg.from > cfg.to) {
-      setStatus('⚠ Khoảng ngày dương lịch không hợp lệ.');
+    const validation = validateSearchConfig(cfg);
+    if (validation.problems.length) {
+      setStatus(firstProblemMessage(validation.problems[0], validation.dayCount));
       return;
     }
-    if (!cfg.chinhValues.length) {
-      setStatus('⚠ Hãy chọn ít nhất 1 tổ hợp chính tinh cung Mệnh.');
-      return;
-    }
-
-    const maxDays = 3660;
-    const dayCount = Math.floor((cfg.to - cfg.from) / (24 * 3600 * 1000)) + 1;
-    if (dayCount > maxDays) {
-      setStatus(`⚠ Khoảng ngày quá lớn (${dayCount} ngày). Vui lòng thu hẹp <= ${maxDays} ngày.`);
-      return;
-    }
+    const dayCount = validation.dayCount;
 
     _searchRunning = true;
     _searchCancelled = false;
@@ -394,6 +434,7 @@
     if (catMode) catMode.value = 'any';
     if (tuanTrietMode) tuanTrietMode.value = 'any';
     if (hungMode) hungMode.value = 'any';
+    renderAbnormalCaseList();
     syncSearchResultPlacement();
     window.addEventListener('resize', syncSearchResultPlacement);
     ['hoTen', 'ngay', 'thang', 'nam', 'ngayDL', 'thangDL', 'namDL', 'gio', 'gt'].forEach(id => {
