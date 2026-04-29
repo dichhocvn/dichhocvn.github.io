@@ -40,6 +40,8 @@
 - Chỉ sửa đúng module liên quan task.
 - Không nhúng lại rule lớn vào `tuvi-render.js`.
 - Sửa rule ở `src/rules/*.txt`, sau đó chạy sync script.
+- Mobile và desktop phải có layout riêng, xử lý độc lập; không giả định một bản sửa UI áp dụng giống nhau cho cả hai.
+- Khi fix giao diện mà chưa rõ target là mobile hay desktop, phải hỏi lại để xác nhận trước khi sửa.
 - Sau mọi sửa JS: kiểm tra syntax trước khi kết thúc.
 - Sau mọi thay đổi tính năng/cấu trúc: **bắt buộc cập nhật docs tương ứng** (`README.md`, `ARCHITECTURE.md`, `CLAUDE.md` khi cần).
 - Check docs sync trước khi kết thúc:
