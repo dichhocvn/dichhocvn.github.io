@@ -33,7 +33,7 @@
 - `src/css/base.css`: variables + reset + shell layout (toàn page padding 2px)
 - `src/css/chat.css`: chatbot UI
 - `src/css/forms.css`: form + tab + wrapper + search nav class-based responsive + margin-bottom 2px cho grid mobile + tab bar sticky desktop khi cuộn
-- `src/css/grid.css`: grid/cung/sao/highlight/pills + han-nav class-based responsive + tăng z-index khu chính tinh, cân width vị trí 1/3 để vị trí 2 centered và tránh overlap + cát tinh cho phép overflow, sao hung vị trí 6 căn phải theo cột hung, một dòng và tràn về bên trái để đủ chữ
+- `src/css/grid.css`: grid/cung/sao/highlight/pills + han-nav class-based responsive + tăng z-index khu chính tinh, cân width vị trí 1/3 để vị trí 2 centered và tránh overlap + cát tinh cho phép overflow, sao hung vị trí 6 căn phải theo cột hung, một dòng và canh mép phải ổn định để không đè viền
 - `src/css/modals.css`: prompt/rule modal
 
 ## Quy tắc chỉnh sửa
