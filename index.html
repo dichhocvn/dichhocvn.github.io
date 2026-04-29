@@ -153,11 +153,12 @@
               <!-- Template màu -->
               <div class="fg">
                 <label>Template màu</label>
-                <select onchange="applyTemplate(this.value)">
+                <select id="templateSelect" data-lyso-keep="1" onchange="applyTemplate(this.value)">
                   <option value="classic">Cổ điển (hiện tại)</option>
                   <option value="mono">Đơn sắc (không màu)</option>
                   <option value="dark">Tối</option>
                   <option value="pastel">Nhạt</option>
+                  <option value="lyso">lyso.vn (API ảnh)</option>
                 </select>
               </div>
 
@@ -301,6 +302,9 @@
             <div class="grid-scaler" id="gridScaler">
               <div class="grid" id="grid"></div>
             </div>
+          </div>
+          <div id="lysoApiWrap" style="display:none;">
+            <img id="lysoApiImage" alt="Lá số lyso.vn" style="max-width:100%;height:auto;border:1px solid #c8b88a;border-radius:6px;background:#fff;">
           </div>
           <div id="searchResultNav" class="search-result-nav">
             <button class="btn nav-btn nav-btn-prev" onclick="openPrevSearchResult()"><span class="nav-icon">◀</span><span class="nav-label"> Lá số trước</span></button>

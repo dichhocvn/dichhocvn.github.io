@@ -58,13 +58,116 @@
         '--color-hung': '#e67e22',
         '--color-border': '#a0845c',
       },
+      // Dùng ảnh API từ lyso.vn nên khóa chỉnh màu thủ công
+      lyso: DEFAULT_CONFIG,
     };
+
+    function setLysoTemplateLock(isLocked) {
+      const panel = document.getElementById('cfgPanel');
+      if (!panel) return;
+      panel.classList.toggle('is-lyso-locked', !!isLocked);
+      panel.querySelectorAll('input, select, button').forEach(el => {
+        if (el.dataset.lysoKeep) return;
+        el.disabled = !!isLocked;
+      });
+    }
+
+    function isLysoTemplateActive() {
+      const templateSelect = document.getElementById('templateSelect');
+      return templateSelect?.value === 'lyso';
+    }
+
+    function toggleLysoApiMode(useApiImage) {
+      const gridWrap = document.getElementById('gridScalerOuter');
+      const apiWrap = document.getElementById('lysoApiWrap');
+      const legend = document.querySelector('.legend');
+      const promptBtn = document.querySelector('.btn-prompt');
+      if (gridWrap) gridWrap.style.display = useApiImage ? 'none' : '';
+      if (apiWrap) apiWrap.style.display = useApiImage ? 'block' : 'none';
+      if (legend) legend.style.display = useApiImage ? 'none' : '';
+      if (promptBtn) promptBtn.style.display = useApiImage ? 'none' : '';
+    }
+
+    function renderLysoApiImage(imageUrl) {
+      const imgEl = document.getElementById('lysoApiImage');
+      const wrap = document.getElementById('lasoWrap');
+      if (!imgEl || !wrap) return false;
+      const url = String(imageUrl || '').trim();
+      if (!url) return false;
+      toggleLysoApiMode(true);
+      imgEl.src = `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
+      wrap.style.display = 'block';
+      return true;
+    }
+
+    function parseTimeText(value) {
+      const raw = String(value || '').trim();
+      const m = raw.match(/^(\d{1,2})(?::(\d{1,2}))?$/);
+      if (!m) return null;
+      const hh = Number.parseInt(m[1], 10);
+      const mm = Number.parseInt(m[2] || '0', 10);
+      if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+      return { hh, mm };
+    }
+
+    function getNamXemHanForLyso() {
+      const namXemEl = document.getElementById('namXem');
+      const raw = namXemEl?.dataset?.val || namXemEl?.textContent || '0';
+      const val = Number.parseInt(String(raw).trim(), 10);
+      return Number.isFinite(val) ? val : 0;
+    }
+
+    function buildLysoApiImageUrlFromForm() {
+      const gtValue = (document.getElementById('gt')?.value || 'nam').toLowerCase();
+      const gtToken = gtValue === 'nu' ? '0' : '1';
+      const gioObj = parseTimeText(document.getElementById('gio')?.value || '');
+      const dd = Number.parseInt(document.getElementById('ngayDL')?.value || '', 10);
+      const mm = Number.parseInt(document.getElementById('thangDL')?.value || '', 10);
+      const yy = Number.parseInt(document.getElementById('namDL')?.value || '', 10);
+      if (!gioObj || Number.isNaN(dd) || Number.isNaN(mm) || Number.isNaN(yy)) {
+        throw new Error('Thiếu dữ liệu giờ sinh hoặc ngày dương lịch để gọi API lyso');
+      }
+      const payload = `${String(gioObj.hh).padStart(2, '0')}${String(gioObj.mm).padStart(2, '0')}${String(dd).padStart(2, '0')}${String(mm).padStart(2, '0')}${String(yy).padStart(4, '0')}`;
+      const hoTen = (document.getElementById('hoTen')?.value || 'la-so').trim() || 'la-so';
+      const namXH = getNamXemHanForLyso();
+      return `https://lyso.vn/lasotuvi/${gtToken}/${payload}/${namXH}/${encodeURIComponent(hoTen)}.jpg`;
+    }
+
+    function renderLysoFromCurrentInputs() {
+      const autoUrl = buildLysoApiImageUrlFromForm();
+      return renderLysoApiImage(autoUrl);
+    }
+
+    function buildLysoApiImageUrlFromSearchResult(row) {
+      if (!row || !row.solar) throw new Error('Thiếu dữ liệu lá số từ kết quả tìm kiếm');
+      const gtToken = (row.gender || 'nam') === 'nu' ? '0' : '1';
+      const gioObj = parseTimeText(String(row.gio || '').trim());
+      if (!gioObj) throw new Error('Giờ sinh trong kết quả tìm kiếm không hợp lệ');
+      const payload = `${String(gioObj.hh).padStart(2, '0')}${String(gioObj.mm).padStart(2, '0')}${String(row.solar.dd).padStart(2, '0')}${String(row.solar.mm).padStart(2, '0')}${String(row.solar.yy).padStart(4, '0')}`;
+      const hoTen = 'search-result';
+      const namXH = getNamXemHanForLyso();
+      return `https://lyso.vn/lasotuvi/${gtToken}/${payload}/${namXH}/${encodeURIComponent(hoTen)}.jpg`;
+    }
+
+    function renderLysoFromSearchResult(row) {
+      return renderLysoApiImage(buildLysoApiImageUrlFromSearchResult(row));
+    }
 
     function applyTemplate(name) {
       const cfg = TEMPLATES[name] || DEFAULT_CONFIG;
+      setLysoTemplateLock(name === 'lyso');
       setCssVar('--mono-mode', '0');
       Object.entries(cfg).forEach(([k, v]) => setCssVar(k, v));
       syncConfigUI(cfg);
+      if (name === 'lyso') {
+        try {
+          renderLysoFromCurrentInputs();
+        } catch (_) {
+          toggleLysoApiMode(true);
+        }
+        return;
+      }
+      toggleLysoApiMode(false);
       // Re-render để áp màu mới vì màu ngũ hành là inline style trong DOM
       if (_lastJson) {
         const gridEl = document.getElementById('grid');
@@ -113,6 +216,10 @@
     function resetConfig() {
       Object.entries(DEFAULT_CONFIG).forEach(([k, v]) => setCssVar(k, v));
       syncConfigUI(DEFAULT_CONFIG);
+      const templateSelect = document.getElementById('templateSelect');
+      if (templateSelect) templateSelect.value = 'classic';
+      setLysoTemplateLock(false);
+      toggleLysoApiMode(false);
       document.querySelectorAll('#cfgPanel select:not([data-var])').forEach(el => el.selectedIndex = 0);
       if (_lastJson) {
         const gridEl = document.getElementById('grid');
@@ -120,6 +227,15 @@
         requestAnimationFrame(() => { scaleGrid(); TUVI_RENDER.reRenderPills(); });
       }
     }
+
+    window.isLysoTemplateActive = isLysoTemplateActive;
+    window.renderLysoFromCurrentInputs = renderLysoFromCurrentInputs;
+    window.renderLysoFromSearchResult = renderLysoFromSearchResult;
+    window.toggleLysoApiMode = toggleLysoApiMode;
+    window.refreshLysoImageForNamXem = function refreshLysoImageForNamXem() {
+      if (!isLysoTemplateActive()) return;
+      try { renderLysoFromCurrentInputs(); } catch (_) {}
+    };
 
     function convertDL() {
       const dd = parseInt(document.getElementById('ngayDL').value);

@@ -458,10 +458,22 @@
     document.getElementById('ngay').value = row.lunar.ngay;
     document.getElementById('thang').value = row.lunar.thang;
     document.getElementById('nam').value = row.lunar.nam;
+    if (document.getElementById('ngayDL')) document.getElementById('ngayDL').value = row.solar.dd;
+    if (document.getElementById('thangDL')) document.getElementById('thangDL').value = row.solar.mm;
+    if (document.getElementById('namDL')) document.getElementById('namDL').value = row.solar.yy;
     document.getElementById('gio').value = row.gio;
     document.getElementById('gt').value = row.gender;
+    if (typeof convertDL === 'function') convertDL();
     if (typeof syncGioToGioXem === 'function') syncGioToGioXem();
-    if (typeof lapLaSo === 'function') lapLaSo();
+    if (typeof isLysoTemplateActive === 'function' && isLysoTemplateActive() && typeof renderLysoFromSearchResult === 'function') {
+      try {
+        renderLysoFromSearchResult(row);
+      } catch (_) {
+        if (typeof lapLaSo === 'function') lapLaSo();
+      }
+    } else if (typeof lapLaSo === 'function') {
+      lapLaSo();
+    }
     if (document.body?.dataset.layout === 'mobile') closeSearchResultDialogDirect();
     renderResults(window._searchResults);
   };

@@ -75,6 +75,7 @@
         TUVI_RENDER.render(_lastJson, gridEl);
         requestAnimationFrame(() => { scaleGrid(); TUVI_RENDER.reRenderPills(); });
       }
+      if (typeof refreshLysoImageForNamXem === 'function') refreshLysoImageForNamXem();
     }
 
     function initDateTimeDefaultsNow() {
