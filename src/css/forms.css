@@ -190,6 +190,13 @@
       font-family: Arial, sans-serif;
     }
 
+    body[data-layout="desktop"] #formArea .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 8;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
+    }
+
     .tab-btn {
       flex: 1;
       padding: 7px 10px;
@@ -214,6 +221,21 @@
       color: #1a1008;
       font-weight: 600;
       box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
+    }
+
+    /* Desktop/web: khi chatbot ẩn thì tab hiện tại dùng hết chiều cao khả dụng */
+    body[data-layout="desktop"].chatbot-hidden #formAreaLaso {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body[data-layout="desktop"].chatbot-hidden #formWrap,
+    body[data-layout="desktop"].chatbot-hidden #searchPanel,
+    body[data-layout="desktop"].chatbot-hidden #cfgPanel {
+      flex: 1;
+      margin-bottom: 0;
+      overflow: auto;
     }
 
     /* 4.3cm × 4 col = 17.2cm rộng, 5.7cm × 4 row = 22.8cm cao */

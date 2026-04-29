@@ -4,15 +4,18 @@
 
     function applyChatbotVisibility() {
       const isDesktop = (document.body?.dataset.layout || 'desktop') === 'desktop';
-      const hidden = isDesktop && !(window._chatbotVisibleDesktop === true);
+      const hidden = isDesktop;
       document.body.classList.toggle('chatbot-hidden', hidden);
       const btn = document.getElementById('chatToggleBtn');
-      if (btn) btn.textContent = hidden ? 'Hiện chatbot' : 'Ẩn chatbot';
+      if (btn) {
+        btn.textContent = 'Hiện chatbot (sắp hỗ trợ)';
+        btn.disabled = true;
+      }
     }
 
     window.toggleChatbotVisibility = function toggleChatbotVisibility() {
-      window._chatbotVisibleDesktop = !(window._chatbotVisibleDesktop === true);
-      applyChatbotVisibility();
+      // Tạm khóa chức năng hiện chatbot trên desktop.
+      return;
     };
     window.addEventListener('resize', applyChatbotVisibility);
     setTimeout(applyChatbotVisibility, 0);

@@ -81,6 +81,13 @@
       max-height: 58vh;
     }
 
+    /* Desktop khi chatbot đang ẩn: form tabs chiếm full chiều cao còn lại */
+    body[data-layout="desktop"].chatbot-hidden #formArea {
+      flex: 1;
+      max-height: none;
+      border-bottom: none;
+    }
+
     /* ── Chế độ mobile (≤768px): ẩn thanh bên trái, chỉ hiện lá số ── */
     /* ── Chế độ desktop (>768px): hiện cả col-chat (trái) + col-laso ── */
     @media (max-width: 768px) {

@@ -97,6 +97,21 @@
     const el = document.getElementById('searchStatus');
     if (el) el.textContent = text;
   }
+  function showSearchValidationDialog(messages) {
+    const overlay = document.getElementById('searchValidationOverlay');
+    const body = document.getElementById('searchValidationBody');
+    if (!overlay || !body || !messages.length) return;
+    body.innerHTML = messages
+      .map(m => `<div style="margin-bottom:6px;">${m}</div>`)
+      .join('');
+    overlay.classList.add('open');
+  }
+  function closeSearchValidationDialog(e) {
+    const overlay = document.getElementById('searchValidationOverlay');
+    if (!overlay) return;
+    if (e && e.target !== overlay) return;
+    overlay.classList.remove('open');
+  }
   function problemMessage(problemId, dayCount) {
     switch (problemId) {
       case 'missing-from': return 'Vui lòng nhập Từ ngày DL.';
@@ -113,7 +128,10 @@
   function renderValidationStatus(validation) {
     if (!validation.problems.length) return false;
     const messages = validation.problems.map(id => problemMessage(id, validation.dayCount));
-    setStatus(`⚠ Không thể tìm kiếm do ${messages.length} lỗi: ${messages.join(' | ')}`);
+    const msg = `⚠ Không thể tìm kiếm do ${messages.length} lỗi: ${messages.join(' | ')}`;
+    setStatus(msg);
+    const isDesktop = (document.body?.dataset.layout || 'desktop') === 'desktop';
+    if (isDesktop) showSearchValidationDialog(messages);
     return true;
   }
   function validateSearchConfig(cfg) {
@@ -283,7 +301,10 @@
     const hits = [];
     const total = dayCount * GIO_QUET.length;
     if (total <= 0) {
-      setStatus('⚠ Không có dữ liệu để quét trong khoảng ngày đã chọn.');
+      const msg = 'Không có dữ liệu để quét trong khoảng ngày đã chọn.';
+      setStatus(`⚠ ${msg}`);
+      const isDesktop = (document.body?.dataset.layout || 'desktop') === 'desktop';
+      if (isDesktop) showSearchValidationDialog([msg]);
       return;
     }
     let checked = 0;
@@ -457,5 +478,6 @@
     if (!ov) return;
     ov.classList.remove('open');
   };
+  window.closeSearchValidationDialog = closeSearchValidationDialog;
   window.clearSearchResultsState = clearSearchResultsState;
 })();

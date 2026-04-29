@@ -484,6 +484,16 @@
     </div>
   </div>
 
+  <div class="rule-overlay" id="searchValidationOverlay" onclick="closeSearchValidationDialog(event)">
+    <div class="rule-modal" style="width:min(560px,94vw);">
+      <div class="rule-modal-header">
+        <div class="rule-modal-title">Không thể tìm lá số</div>
+        <button class="rule-modal-close" onclick="closeSearchValidationDialog()">✕</button>
+      </div>
+      <div class="rule-modal-body" id="searchValidationBody"></div>
+    </div>
+  </div>
+
   <!-- html2canvas để lưu ảnh -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 

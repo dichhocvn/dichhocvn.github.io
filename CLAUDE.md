@@ -23,16 +23,16 @@
 - Đổi Dương↔Âm: `src/js/features/lunar-calendar.js`
 - Mũi tên giờ + nhảy ngày/tháng/năm ÂL + init ngày/giờ hiện tại (giờ nav độc lập xem hạn): `src/js/features/gio-controls.js`
 - Năm xem hạn: `src/js/features/han-controls.js`
-- Chatbot (desktop mặc định ẩn, nút Ẩn/Hiện cố định dưới cùng cột trái): `src/js/features/chatbot.js`
+- Chatbot (desktop đang ẩn, nút dưới cùng cột trái disabled vì chưa hỗ trợ bật lại): `src/js/features/chatbot.js`
 - Prompt/JSON export: `src/js/features/prompt-export.js`
-- Tab tìm kiếm lá số (ngày `dd/mm/yyyy` + quét 12 giờ sinh + Tuần/Triệt tại Mệnh + nav `a/b` + auto clear khi rời Search hoặc bấm Lập lá số): `src/js/features/search-laso.js`
+- Tab tìm kiếm lá số (ngày `dd/mm/yyyy` + quét 12 giờ sinh + Tuần/Triệt tại Mệnh + nav `a/b` + auto clear khi rời Search hoặc bấm Lập lá số + lỗi validate mở dialog trên desktop, message plain không đánh số): `src/js/features/search-laso.js`
 - Theme/config: `src/js/features/theme-config.js`
 - Responsive/layout: `src/js/features/layout-scale.js`, `layout-responsive.js`, `layout-resize.js`
 
 ## CSS modules
 - `src/css/base.css`: variables + reset + shell layout (toàn page padding 2px)
 - `src/css/chat.css`: chatbot UI
-- `src/css/forms.css`: form + tab + wrapper + search nav class-based responsive + margin-bottom 2px cho grid mobile
+- `src/css/forms.css`: form + tab + wrapper + search nav class-based responsive + margin-bottom 2px cho grid mobile + tab bar sticky desktop khi cuộn
 - `src/css/grid.css`: grid/cung/sao/highlight/pills + han-nav class-based responsive
 - `src/css/modals.css`: prompt/rule modal
 
@@ -42,6 +42,7 @@
 - Sửa rule ở `src/rules/*.txt`, sau đó chạy sync script.
 - Mobile và desktop phải có layout riêng, xử lý độc lập; không giả định một bản sửa UI áp dụng giống nhau cho cả hai.
 - Khi fix giao diện mà chưa rõ target là mobile hay desktop, phải hỏi lại để xác nhận trước khi sửa.
+- Mỗi lần báo thay đổi giao diện phải ghi rõ phạm vi đang sửa: `mobile` hay `web/desktop`.
 - Sau mọi sửa JS: kiểm tra syntax trước khi kết thúc.
 - Sau mọi thay đổi tính năng/cấu trúc: **bắt buộc cập nhật docs tương ứng** (`README.md`, `ARCHITECTURE.md`, `CLAUDE.md` khi cần).
 - Check docs sync trước khi kết thúc:

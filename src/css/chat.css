@@ -116,8 +116,6 @@
     }
 
     .chat-toggle-btn {
-      position: sticky;
-      bottom: 0;
       width: 100%;
       padding: 8px 10px;
       border: none;
@@ -128,6 +126,31 @@
       font-weight: 600;
       cursor: pointer;
       z-index: 2;
+    }
+    .chat-toggle-btn:disabled {
+      background: #e0e0e0;
+      color: #8a8a8a;
+      border-top-color: #cdcdcd;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    body[data-layout="desktop"] .col-chat {
+      position: sticky;
+      overflow: hidden;
+    }
+
+    body[data-layout="desktop"] .chat-panel {
+      padding-bottom: 40px;
+    }
+
+    body[data-layout="desktop"] .chat-toggle-btn {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      z-index: 5;
     }
 
     body.chatbot-hidden .chat-panel {
