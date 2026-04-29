@@ -15,7 +15,7 @@
 - CSS layout co ban (toàn page padding 2px; desktop khi chatbot ẩn thì formArea chiếm full chiều cao còn lại) -> `src/css/base.css`
 - CSS chat -> `src/css/chat.css`
 - CSS form/tab/grid wrapper (search nav class-based + responsive + margin-bottom 2px cho grid mobile; tab panel full-height trên desktop khi chatbot ẩn; tab bar sticky trên desktop khi cuộn form) -> `src/css/forms.css`
-- CSS grid cung/sao/highlight/pill (han-nav class-based + responsive; tăng z-index khu chính tinh, chỉnh header vị trí 1/3 cân nhau để vị trí 2 centered; cát tinh cho phép overflow, sao hung vị trí 6 căn phải theo cạnh nội dung, một dòng và tràn về bên trái để đủ chữ) -> `src/css/grid.css`
+- CSS grid cung/sao/highlight/pill (han-nav class-based + responsive; tăng z-index khu chính tinh, chỉnh header vị trí 1/3 cân nhau để vị trí 2 centered; cát tinh cho phép overflow, sao hung vị trí 6 căn phải theo cột hung, một dòng và tràn về bên trái để đủ chữ) -> `src/css/grid.css`
 - CSS modal prompt/rule -> `src/css/modals.css`
 
 ## Definition of Done (docs sync)
