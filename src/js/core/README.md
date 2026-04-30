@@ -1,9 +1,9 @@
 # src/js/core/
-- `data.js`: constants/lookup tables dùng chung cho mọi phương pháp an sao.
-- `ansao.js`: shared core an sao (phần dùng chung giữa các phương pháp).
-- `trungchauphai.js`: method Trung châu phái Vương Đình Chi + giữ các bảng đặc thù method (`TU_HOA`, `SUC_MANH_LABEL`, `HOA_TINH_KHOI`, `LINH_TINH_KHOI`, `SAO_THEO_THANG`, `SAO_HANH`).
-- `thaithulang.js`: method Thái Thứ Lang (bảng sao theo giờ/năm/tháng/can lưu sẵn dạng index đã xử lý, không giữ raw mapping; Tứ Hóa + M/V/Đ/B/H theo TTL; riêng Tuần/Triệt giữ y hệt Trung Châu; phần còn lại dùng shared core).
-- `logic.js`: router compute theo method, xuất `TUVI_LOGIC.compute(...)`.
-- Các tiện ích index/lookup chung cho địa chi, thiên can, cung chức nằm ở `src/js/utils/`.
-- Chuẩn trạng thái sức mạnh dùng thống nhất `M/V/Đ/B/H` (không dùng `D`).
-- Bảng sao theo thiên can hiện dùng quy tắc `Lưu Hà`: Giáp-Dậu, Ất-Tuất, Bính-Mùi, Đinh-Thân, Mậu-Tý, Kỷ-Ngọ, Canh-Mão, Tân-Thìn, Nhâm-Hợi, Quý-Dần.
+- `data.js`: bảng tra chung (`BANG_MENH`, `BANG_THAN`, `BANG_TU_VI`, `SAO_META`, `TRIET`/`TUAN`, …). Không định nghĩa `SAO_THEO_CAN` / `SAO_THEO_NAM` / `SAO_THEO_GIO` (các bảng đó ở file phương pháp). `CAN` / `CHI` / `TEN_CUNG` lấy từ global `TUVI_THIENCAN_UTIL` / `TUVI_DIACHI_UTIL` / `TUVI_CUNGCHUC_UTIL` — **bắt buộc load utils trước** `data.js` (xem `tests/test-lib.js` / `index.html`).
+- `ansao.js`: lõi an sao dùng chung (`computeByTrungChau`, `chiGioFromStr`, …) cho mọi phương pháp dùng cùng pipeline Trung Châu; không tự an sao. Vị trí sao lấy từ hook `computeStarPositions` trong từng method.
+- `trungchauphai.js`: phương pháp Trung châu (Vương Đình Chi), độc lập theo method và không dùng bảng/hàm của `thaithulang.js`. Gom `TU_HOA`, `SUC_MANH_LABEL`, `SAO_THEO_CAN` / `NAM` / `GIO` / `THANG`, `SAO_HANH` (đặt ở đầu file). Cung cấp `computeStarPositions` (an toàn bộ bộ sao của method), cùng các hook `computeHoaLinhPositions`, `computeTuongTinhRing`, `computeBacSiRing`, `computeThaiTueRing`, `computeThienThuongThienSu`. Khi `compute()`, method active sẽ sync các bảng cần thiết vào `TUVI_DATA` cho module legacy.
+- `thaithulang.js`: Thái Thứ Lang, độc lập theo method và không dùng bảng/hàm của `trungchauphai.js`; chỉ dùng chung `data.js` và runtime `ansao.js`. Tự định nghĩa bảng TTL (`TTL_SAO_THEO_*`, `TTL_TU_HOA`, `TTL_SUC_MANH_RAW`, `TTL_SAO_HANH`) và `computeStarPositions` riêng; `TTL_SAO_HANH` lấy theo nguồn CSV TTL (`/Users/ducanhnguyen/Documents/tuvi/data-app/TTL/to mau/to_mau.csv`). `TRIET` copy từ `data.js`, có hàm riêng an sao lưu (`buildLuuSaoTables`) trả về `LUU_SAO_THEO_CHI` + `LUU_SAO_THEO_CAN` (bao gồm `L.Đại Hao`/`L.Tiểu Hao` theo vòng Bác Sĩ), vòng Thái Tuế/Bác Sĩ/Hỏa-Linh theo TTL. Vòng Tướng Tinh của TTL chỉ an `Hoa Cái` và `Kiếp Sát`, đồng thời loại `Thiên Vu` khỏi sao theo tháng; khóa tên sao theo can dùng key chuẩn `Lưu Niên Văn Tinh`. Khi `compute()`, method active sẽ sync các bảng cần thiết vào `TUVI_DATA` cho module legacy.
+- `logic.js`: `TUVI_LOGIC.compute(input)` — `resolveMethod(input.method)` mặc định **`trungchau`** khi thiếu/không khớp (gọi trực tiếp từ test/script). Ứng dụng web thường truyền `method` từ `getCurrentAnSaoMethod()` (mặc định UI: **`thaithulang`** trong `theme-config.js`).
+- Tiện ích địa chi / thiên can / cung chức: `src/js/utils/`.
+- Chuẩn hiển thị sức mạnh: `M/V/Đ/B/H` (không dùng `D`).
+- `Lưu Hà` (và các sao theo can trong bảng method): Giáp-Dậu, Ất-Tuất, Bính-Mùi, Đinh-Thân, Mậu-Tý, Kỷ-Ngọ, Canh-Mão, Tân-Thìn, Nhâm-Hợi, Quý-Dần.

@@ -11,10 +11,10 @@ function loadScript(filePath, exposeNames = []) {
   vm.runInThisContext(`${code}\n${expose}`, { filename: filePath });
 }
 
-loadScript(path.join(ROOT, "src/js/core/data.js"), ["TUVI_DATA"]);
 loadScript(path.join(ROOT, "src/js/utils/diachi.js"), ["TUVI_DIACHI_UTIL"]);
 loadScript(path.join(ROOT, "src/js/utils/thiencan.js"), ["TUVI_THIENCAN_UTIL"]);
 loadScript(path.join(ROOT, "src/js/utils/cungchuc.js"), ["TUVI_CUNGCHUC_UTIL"]);
+loadScript(path.join(ROOT, "src/js/core/data.js"), ["TUVI_DATA"]);
 loadScript(path.join(ROOT, "src/js/core/ansao.js"), ["ANSAO_SHARED"]);
 loadScript(path.join(ROOT, "src/js/core/trungchauphai.js"), ["ANSAO_TRUNGCHAU"]);
 loadScript(path.join(ROOT, "src/js/core/thaithulang.js"), ["ANSAO_THAITHULANG"]);

@@ -4,8 +4,9 @@
 // ============================================================
 
 const ANSAO_THAITHULANG = (() => {
-  const D = { ...TUVI_DATA, ...(ANSAO_TRUNGCHAU.TABLES || {}) };
+  const D = { ...TUVI_DATA };
   const CHI_KEYS = TUVI_DIACHI_UTIL.KEYS;
+  // Nhóm sao TTL an theo GIỜ sinh.
   const TTL_SAO_THEO_GIO = {
     "Văn Xương": [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11],
     "Văn Khúc": [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3],
@@ -15,6 +16,7 @@ const ANSAO_THAITHULANG = (() => {
     "Địa Kiếp": [11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   };
 
+  // Nhóm sao TTL an theo CHI NĂM sinh.
   const TTL_SAO_THEO_NAM = {
     "Thiên Mã": [2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8, 5],
     "Phá Toái": [5, 1, 9, 5, 1, 9, 5, 1, 9, 5, 1, 9],
@@ -26,12 +28,14 @@ const ANSAO_THAITHULANG = (() => {
     "Thiên Đức": [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8],
     "Nguyệt Đức": [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4],
     "Hồng Loan": [3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4],
+    "Đào Hoa": [9, 6, 3, 0, 9, 6, 3, 0, 9, 6, 3, 0],
     "Thiên Hỉ": [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10],
     "Long Trì": [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3],
     "Phượng Các": [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11],
     "Giải Thần": [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11],
   };
 
+  // Nhóm sao TTL an theo THÁNG âm sinh.
   const TTL_SAO_THEO_THANG = {
     "Hữu Bật": [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11],
     "Tả Phụ": [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3],
@@ -42,13 +46,14 @@ const ANSAO_THAITHULANG = (() => {
     "Thiên Giải": [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7],
   };
 
+  // Nhóm sao TTL an theo THIÊN CAN năm sinh.
   const TTL_SAO_THEO_CAN = {
     "Đà La": [1, 2, 4, 5, 4, 5, 7, 8, 10, 11],
     "Lộc Tồn": [2, 3, 5, 6, 5, 6, 8, 9, 11, 0],
     "Kình Dương": [3, 4, 6, 7, 6, 7, 9, 10, 0, 1],
     "Quốc Ấn": [10, 11, 1, 2, 1, 2, 4, 5, 7, 8],
     "Đường Phù": [7, 8, 10, 11, 10, 11, 1, 2, 4, 5],
-    "LN. Văn Tinh": [5, 6, 8, 9, 8, 9, 11, 0, 9, 3],
+    "Lưu Niên Văn Tinh": [5, 6, 8, 9, 8, 9, 11, 0, 9, 3],
     "Thiên Khôi": [1, 0, 11, 11, 1, 0, 2, 2, 3, 3],
     "Thiên Việt": [7, 8, 9, 9, 7, 8, 6, 6, 5, 5],
     "Thiên Quan": [7, 4, 5, 2, 3, 9, 11, 9, 10, 6],
@@ -59,6 +64,7 @@ const ANSAO_THAITHULANG = (() => {
     "Địa Võng": [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
   };
 
+  // Bảng Tứ Hóa của TTL theo can năm.
   const TTL_TU_HOA = [
     ['Liêm Trinh', 'Phá Quân', 'Vũ Khúc', 'Thái Dương'],
     ['Thiên Cơ', 'Thiên Lương', 'Tử Vi', 'Thái Âm'],
@@ -71,6 +77,128 @@ const ANSAO_THAITHULANG = (() => {
     ['Thiên Lương', 'Tử Vi', 'Tả Phụ', 'Vũ Khúc'],
     ['Phá Quân', 'Cự Môn', 'Thái Âm', 'Tham Lang'],
   ];
+
+  // Nguồn chuẩn: /Users/ducanhnguyen/Documents/tuvi/data-app/TTL/to mau/to_mau.csv
+  const TTL_SAO_HANH = {
+    'Bác Sỹ': 'thuy',
+    'Bát Tọa': 'moc',
+    'Bạch Hổ': 'kim',
+    'Bệnh': '',
+    'Bệnh Phù': 'tho-moc',
+    'Chỉ Bối': '',
+    'Cô Thần': 'tho',
+    'Cự Môn': 'thuy',
+    'Dưỡng': '',
+    'Giải Thần': 'moc',
+    'Hoa Cái': 'kim',
+    'Hóa Khoa': 'moc-thuy',
+    'Hóa Kị': 'thuy',
+    'Hóa Lộc': 'moc-tho',
+    'Hóa Quyền': 'moc-thuy',
+    'Hỉ Thần': 'hoa',
+    'Hỏa Tinh': 'hoa',
+    'Hồng Loan': 'thuy',
+    'Hữu Bật': 'thuy-tho',
+    'Kiếp Sát': 'hoa',
+    'Kình Dương': 'kim-hoa',
+    'Linh Tinh': 'hoa',
+    'Liêm Trinh': 'hoa',
+    'Long Trì': 'thuy',
+    'Long Đức': 'kim',
+    'Lâm Quan': '',
+    'Lưu Hà': 'thuy',
+    'Lưu Niên Văn Tinh': 'kim',
+    'Lộc Tồn': 'tho-thuy',
+    'Lực Sĩ': 'hoa',
+    'Mộ': '',
+    'Mộc Dục': '',
+    'Nguyệt Sát': '',
+    'Nguyệt Đức': 'hoa',
+    'Phan An': '',
+    'Phi Liêm': 'hoa',
+    'Phong Cáo': 'tho-thuy',
+    'Phá Quân': 'thuy',
+    'Phá Toái': 'hoa-kim',
+    'Phúc Đức': 'tho',
+    'Phượng Các': 'moc-tho',
+    'Phục Binh': 'hoa',
+    'Quan Phù': 'hoa',
+    'Quan Phủ': 'hoa',
+    'Quan Đới': '',
+    'Quả Tú': 'tho',
+    'Quốc Ấn': 'tho',
+    'Suy': '',
+    'Tai Sát': '',
+    'Tam Thai': 'thuy',
+    'Tang Môn': 'moc',
+    'Thai': '',
+    'Thai Phụ': 'kim-tho',
+    'Tham Lang': 'moc-thuy',
+    'Thanh Long': 'thuy',
+    'Thiên Cơ': 'moc',
+    'Thiên Diêu': 'thuy',
+    'Thiên Giải': 'hoa',
+    'Thiên Hình': 'hoa',
+    'Thiên Hư': 'thuy',
+    'Thiên Hỉ': 'thuy',
+    'Thiên Khôi': 'hoa-kim',
+    'Thiên Không': 'hoa',
+    'Thiên Khốc': 'kim',
+    'Thiên La': 'kim',
+    'Thiên Lương': 'tho',
+    'Thiên Mã': 'hoa',
+    'Thiên Phúc': 'tho',
+    'Thiên Phủ': 'tho',
+    'Thiên Quan': 'hoa',
+    'Thiên Quý': 'tho',
+    'Thiên Sát': '',
+    'Thiên Sứ': 'thuy',
+    'Thiên Thương': 'tho',
+    'Thiên Thọ': 'tho',
+    'Thiên Trù': 'tho',
+    'Thiên Tài': 'tho',
+    'Thiên Tướng': 'thuy',
+    'Thiên Việt': 'hoa-moc',
+    'Thiên Y': 'thuy',
+    'Thiên Đồng': 'thuy',
+    'Thiên Đức': 'hoa',
+    'Thiếu Dương': 'hoa',
+    'Thiếu Âm': 'thuy',
+    'Thái Dương': 'hoa',
+    'Thái Tuế': 'hoa',
+    'Thái Âm': 'thuy',
+    'Thất Sát': 'kim',
+    'Tiểu Hao': 'hoa',
+    'Trường Sinh': '',
+    'Trực Phù': 'hoa',
+    'Tuyệt': '',
+    'Tuế Dịch': '',
+    'Tuế Phá': 'hoa',
+    'Tướng Quân': 'moc',
+    'Tướng Tinh': '',
+    'Tả Phụ': 'tho-kim',
+    'Tấu Thư': 'kim',
+    'Tức Thần': '',
+    'Tử': '',
+    'Tử Phù': 'hoa',
+    'Tử Vi': 'tho',
+    'Vong Thần': '',
+    'Văn Khúc': 'thuy-hoa',
+    'Văn Xương': 'kim-tho',
+    'Vũ Khúc': 'kim',
+    'Ân Quang': 'moc',
+    'Điếu Khách': 'hoa',
+    'Đà La': 'kim-hoa',
+    'Đào Hoa': 'moc-thuy',
+    'Đường Phù': 'moc',
+    'Đại Hao': 'hoa',
+    'Đẩu Quân': 'hoa',
+    'Đế Vượng': '',
+    'Địa Giải': 'tho',
+    'Địa Không': 'hoa',
+    'Địa Kiếp': 'hoa',
+    'Địa Võng': 'kim',
+  };
 
   const TTL_SUC_MANH_RAW = {
     "Cự Môn": { ty: "v", suu: "h", dan: "v", mao: "m", thin: "h", ti: "h", ngo: "v", mui: "h", than: "d", dau: "m", tuat: "h", hoi: "d" },
@@ -108,14 +236,51 @@ const ANSAO_THAITHULANG = (() => {
   };
 
   const ttlData = (() => {
-    const LUU_SAO_THEO_CHI = {
-      // Dùng cùng cách an với Trung Châu cho nhóm sao lưu này
-      "L.Thiên Khốc": [6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7],
-      "L.Thiên Hư": [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5],
-      "L.Tang Môn": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1],
-      "L.Bạch Hổ": [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7],
-    };
+    // Chuyên an sao lưu (xem hạn) cho TTL.
+    function buildLuuSaoTables() {
+      const luuTheoChi = {
+        "L.Thiên Khốc": [6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7],
+        "L.Thiên Hư": [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5],
+        "L.Tang Môn": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1],
+        "L.Bạch Hổ": [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7],
+      };
 
+      // L.Đại Hao / L.Tiểu Hao thuộc vòng Bác Sĩ, khởi từ Lộc Tồn (theo can năm xem).
+      const locTonByCan = TTL_SAO_THEO_CAN["Lộc Tồn"];
+      const luuTheoCan = {
+        "L.Tiểu Hao": locTonByCan.map((chi) => (chi + 3) % 12),
+        "L.Đại Hao": locTonByCan.map((chi) => (chi + 9) % 12),
+      };
+
+      return { luuTheoChi, luuTheoCan };
+    }
+    const { luuTheoChi: LUU_SAO_THEO_CHI, luuTheoCan: LUU_SAO_THEO_CAN } = buildLuuSaoTables();
+
+    // Bảng an sao TTL thực dùng cho computeStarPositions.
+    const SAO_THEO_GIO = { ...(D.SAO_THEO_GIO || {}), ...TTL_SAO_THEO_GIO };
+    const SAO_THEO_NAM = { ...(D.SAO_THEO_NAM || {}), ...TTL_SAO_THEO_NAM };
+    const SAO_THEO_THANG = { ...(D.SAO_THEO_THANG || {}), ...TTL_SAO_THEO_THANG };
+    // TTL không dùng nhóm sao tháng của TCP (vd: Thiên Vu).
+    delete SAO_THEO_THANG["Thiên Vu"];
+    const SAO_THEO_CAN = { ...(D.SAO_THEO_CAN || {}), ...TTL_SAO_THEO_CAN };
+
+    const TRIET = D.TRIET.map((arr) => [...arr]); // TTL: Triệt y hệt Trung Châu
+    const TU_HOA = TTL_TU_HOA.map((arr) => [...arr]);
+
+    // TTL: chỉ những sao có trong file mieu_vuong_dac_binh_ham mới có M/V/Đ/B/H.
+    // Các sao khác (vd Hữu Bật) để trống trạng thái.
+    const SUC_MANH_LABEL = {};
+    Object.keys(D.SAO_META || {}).forEach((star) => {
+      SUC_MANH_LABEL[star] = Array(12).fill("");
+    });
+    Object.entries(TTL_SUC_MANH_RAW).forEach(([star, row]) => {
+      SUC_MANH_LABEL[star] = CHI_KEYS.map((k) => {
+        const raw = String(row[k] || "").trim();
+        return /^d$/i.test(raw) ? "Đ" : raw.toUpperCase();
+      });
+    });
+
+    // Vòng Thái Tuế (TTL).
     function computeThaiTueRing({ chiNam }) {
       const thaiTueRing = [
         "Thái Tuế", "Thiếu Dương", "Tang Môn", "Thiếu Âm",
@@ -129,6 +294,7 @@ const ANSAO_THAITHULANG = (() => {
       return out;
     }
 
+    // Vòng Bác Sĩ (TTL), khởi Lộc Tồn.
     function computeBacSiRing({ chiLocTon, thuanChieu }) {
       // TTL dùng hai chuỗi khác nhau cho an thuận/an nghịch.
       const bacSiRingRaw = thuanChieu
@@ -162,6 +328,7 @@ const ANSAO_THAITHULANG = (() => {
         : (startChi - steps + 12 * 10) % 12;
     }
 
+    // Nhóm Hỏa/Linh theo quy tắc TTL.
     function computeHoaLinhPositions({ chiNam, chiGio, thuanChieu }) {
       // TuViViet TTL:
       // - Linh Tinh: Dương Nam/Âm Nữ đi nghịch từ cung khởi; Âm Nam/Dương Nữ đi thuận
@@ -187,27 +354,97 @@ const ANSAO_THAITHULANG = (() => {
       };
     }
 
-    const SAO_THEO_GIO = { ...D.SAO_THEO_GIO, ...TTL_SAO_THEO_GIO };
-    const SAO_THEO_NAM = { ...D.SAO_THEO_NAM, ...TTL_SAO_THEO_NAM };
-    const SAO_THEO_THANG = { ...D.SAO_THEO_THANG, ...TTL_SAO_THEO_THANG };
-    const SAO_THEO_CAN = { ...D.SAO_THEO_CAN, ...TTL_SAO_THEO_CAN };
+    // Nhóm Thiên Thương/Thiên Sứ theo Mệnh.
+    function computeThienThuongThienSu({ chiCungMenh }) {
+      const chiNoBoc = (chiCungMenh + 5) % 12;
+      const chiTatAch = (chiCungMenh + 7) % 12;
+      return { "Thiên Thương": chiNoBoc, "Thiên Sứ": chiTatAch };
+    }
 
-    const TRIET = D.TRIET.map((arr) => [...arr]); // TTL: Triệt y hệt Trung Châu
+    // Vòng Tướng Tinh (TTL): chỉ an Kiếp Sát và Hoa Cái.
+    function computeTuongTinhRing({ chiNam }) {
+      const vongTuongTinh = [
+        "Tướng Tinh", "Phan An", "Tuế Dịch", "Tức Thần",
+        "Hoa Cái", "Kiếp Sát", "Tai Sát", "Thiên Sát",
+        null, null, "Nguyệt Sát", "Vong Thần",
+      ];
+      const viTriTuongTinhList = ['ty', 'dau', 'ngo', 'mao', 'ty', 'dau', 'ngo', 'mao', 'ty', 'dau', 'ngo', 'mao'];
+      let viTri = TUVI_DIACHI_UTIL.NAMES[TUVI_DIACHI_UTIL.keyToIdx(viTriTuongTinhList[chiNam])];
+      const out = {};
+      for (let i = 0; i < 12; i++) {
+        const tenSao = vongTuongTinh[i];
+        if (tenSao === "Hoa Cái" || tenSao === "Kiếp Sát") {
+          out[tenSao] = TUVI_DIACHI_UTIL.nameToIdx(viTri);
+        }
+        viTri = TUVI_DIACHI_UTIL.getNext(viTri);
+      }
+      return out;
+    }
 
-    const TU_HOA = TTL_TU_HOA.map((arr) => [...arr]);
+    function computeStarPositions({
+      canNam, chiNam, chiGio, thang, ngay, chiTV, thuanChieu, chiCungMenh, chiCungThan,
+    }) {
+      const chiTF = D.THIEN_PHU[chiTV];
+      const chinh = {
+        'Tử Vi': chiTV,
+        'Thiên Cơ': D.VONG_TU_VI['Thiên Cơ'][chiTV],
+        'Thái Dương': D.VONG_TU_VI['Thái Dương'][chiTV],
+        'Vũ Khúc': D.VONG_TU_VI['Vũ Khúc'][chiTV],
+        'Thiên Đồng': D.VONG_TU_VI['Thiên Đồng'][chiTV],
+        'Liêm Trinh': D.VONG_TU_VI['Liêm Trinh'][chiTV],
+        'Thiên Phủ': chiTF,
+        'Thái Âm': D.VONG_THIEN_PHU['Thái Âm'][chiTF],
+        'Tham Lang': D.VONG_THIEN_PHU['Tham Lang'][chiTF],
+        'Cự Môn': D.VONG_THIEN_PHU['Cự Môn'][chiTF],
+        'Thiên Tướng': D.VONG_THIEN_PHU['Thiên Tướng'][chiTF],
+        'Thiên Lương': D.VONG_THIEN_PHU['Thiên Lương'][chiTF],
+        'Thất Sát': D.VONG_THIEN_PHU['Thất Sát'][chiTF],
+        'Phá Quân': D.VONG_THIEN_PHU['Phá Quân'][chiTF],
+      };
 
-    // TTL: chỉ những sao có trong file mieu_vuong_dac_binh_ham mới có M/V/Đ/B/H.
-    // Các sao khác (vd Hữu Bật) để trống trạng thái.
-    const SUC_MANH_LABEL = {};
-    Object.keys(D.SAO_META || {}).forEach((star) => {
-      SUC_MANH_LABEL[star] = Array(12).fill("");
-    });
-    Object.entries(TTL_SUC_MANH_RAW).forEach(([star, row]) => {
-      SUC_MANH_LABEL[star] = CHI_KEYS.map((k) => {
-        const raw = String(row[k] || "").trim();
-        return /^d$/i.test(raw) ? "Đ" : raw.toUpperCase();
-      });
-    });
+      const phu_can = {};
+      Object.entries(SAO_THEO_CAN).forEach(([ten, arr]) => { phu_can[ten] = arr[canNam]; });
+
+      const phu_nam = {};
+      Object.entries(SAO_THEO_NAM).forEach(([ten, arr]) => { phu_nam[ten] = arr[chiNam]; });
+
+      const phu_hoa = computeHoaLinhPositions({ chiNam, chiGio, thuanChieu });
+
+      const phu_thang = {};
+      Object.entries(SAO_THEO_THANG).forEach(([ten, arr]) => { phu_thang[ten] = arr[thang - 1]; });
+
+      const phu_gio = {};
+      Object.entries(SAO_THEO_GIO).forEach(([ten, arr]) => { phu_gio[ten] = arr[chiGio]; });
+
+      const chiVX = SAO_THEO_GIO['Văn Xương'][chiGio];
+      const chiVK = SAO_THEO_GIO['Văn Khúc'][chiGio];
+      const phu_gio_ngay = {
+        'Ân Quang': (chiVX + ngay - 2 + 12) % 12,
+        'Thiên Quý': ((chiVK - ngay + 2) % 12 + 12) % 12,
+      };
+
+      const chiTP = SAO_THEO_THANG['Tả Phụ'][thang - 1];
+      const chiHB = SAO_THEO_THANG['Hữu Bật'][thang - 1];
+      const phu_thang_ngay = {
+        'Tam Thai': (chiTP + ngay - 1) % 12,
+        'Bát Tọa': ((chiHB - ngay + 1) % 12 + 12) % 12,
+      };
+
+      const chiLocTon = SAO_THEO_CAN['Lộc Tồn'][canNam];
+      const phu_bac_si = computeBacSiRing({ chiLocTon, thuanChieu });
+      const phu_thai_tue = computeThaiTueRing({ chiNam });
+      const phu_tuong_tinh = computeTuongTinhRing({ chiNam });
+
+      const phu_tai_tho = {
+        'Thiên Tài': (chiCungMenh + chiNam) % 12,
+        'Thiên Thọ': (chiCungThan + chiNam) % 12,
+      };
+
+      const chiDauQuan = ((chiNam - (thang - 1) + 12) % 12 + chiGio) % 12;
+      const phu_dau_quan = { 'Đẩu Quân': chiDauQuan };
+
+      return Object.assign({}, chinh, phu_can, phu_nam, phu_hoa, phu_thang, phu_gio, phu_gio_ngay, phu_thang_ngay, phu_bac_si, phu_thai_tue, phu_tuong_tinh, phu_tai_tho, phu_dau_quan);
+    }
 
     return {
       ...D,
@@ -217,17 +454,38 @@ const ANSAO_THAITHULANG = (() => {
       SAO_THEO_CAN,
       TRIET,
       TU_HOA,
+      SAO_HANH: TTL_SAO_HANH,
       SUC_MANH_LABEL,
       computeHoaLinhPositions,
+      computeThienThuongThienSu,
       computeThaiTueRing,
       computeBacSiRing,
+      computeTuongTinhRing,
+      computeStarPositions,
       LUU_SAO_THEO_CHI,
+      LUU_SAO_THEO_CAN,
     };
   })();
 
   function compute(input) {
+    // Đồng bộ method active cho các module legacy đang đọc TUVI_DATA.*
+    Object.assign(TUVI_DATA, {
+      TU_HOA: ttlData.TU_HOA,
+      SUC_MANH_LABEL: ttlData.SUC_MANH_LABEL,
+      SAO_THEO_CAN: ttlData.SAO_THEO_CAN,
+      SAO_THEO_NAM: ttlData.SAO_THEO_NAM,
+      SAO_THEO_GIO: ttlData.SAO_THEO_GIO,
+      SAO_THEO_THANG: ttlData.SAO_THEO_THANG,
+      SAO_HANH: ttlData.SAO_HANH,
+    });
     return ANSAO_SHARED.computeByTrungChau(input, ttlData);
   }
 
-  return { compute, TABLES: { LUU_SAO_THEO_CHI: ttlData.LUU_SAO_THEO_CHI } };
+  return {
+    compute,
+    TABLES: {
+      LUU_SAO_THEO_CHI: ttlData.LUU_SAO_THEO_CHI,
+      LUU_SAO_THEO_CAN: ttlData.LUU_SAO_THEO_CAN,
+    },
+  };
 })();

@@ -15,3 +15,5 @@ const TUVI_CUNGCHUC_UTIL = (() => {
 
   return { ORDER, indexOf };
 })();
+
+globalThis.TUVI_CUNGCHUC_UTIL = TUVI_CUNGCHUC_UTIL;

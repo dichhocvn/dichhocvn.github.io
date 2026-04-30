@@ -5,15 +5,10 @@
 
     const TUVI_DATA = (() => {
 
-      // ── Thiên Can & Địa Chi ──────────────────────────────────
-      const CAN = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
-      const CHI = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tị', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
-
-      // ── Tên 12 cung (tính từ Mệnh, offset 0..11) ─────────────
-      const TEN_CUNG = [
-        'Mệnh', 'Phụ Mẫu', 'Phúc Đức', 'Điền Trạch', 'Quan Lộc', 'Nô Bộc',
-        'Thiên Di', 'Tật Ách', 'Tài Bạch', 'Tử Tức', 'Phu Thê', 'Huynh Đệ'
-      ];
+      // ── Thiên Can / Địa Chi / Cung Chức lấy từ utils ─────────
+      const CAN = TUVI_THIENCAN_UTIL.NAMES;
+      const CHI = TUVI_DIACHI_UTIL.NAMES;
+      const TEN_CUNG = TUVI_CUNGCHUC_UTIL.ORDER;
 
       // ── Vị trí 12 cung trên grid (chiều kim đồng hồ) ─────────
       // Hàng trên →: Tị(5) Ngọ(6) Mùi(7) Thân(8)
@@ -253,23 +248,38 @@
         // ── Kiếp Sát & Hoa Cái (theo chi năm) ──
         'Kiếp Sát': { type: 'hung' },
         'Hoa Cái': { type: 'cat' },
+        'Tướng Tinh': { type: 'cat' },
+        'Phan An': { type: 'cat' },
+        'Tuế Dịch': { type: 'trung' },
+        'Tức Thần': { type: 'cat' },
+        'Tai Sát': { type: 'hung' },
+        'Thiên Sát': { type: 'hung' },
+        'Chỉ Bối': { type: 'trung' },
+        'Hàm Trì': { type: 'cat' },
+        'Nguyệt Sát': { type: 'hung' },
+        'Vong Thần': { type: 'hung' },
         'Triệt': { type: 'hung' },
-        'Thiên Thương': { type: 'hung' },  // luôn tọa cung Nô Bộc
-        'Thiên Sứ': { type: 'hung' },   // luôn tọa cung Tật Ách
+        'Thiên Thương': { type: 'hung' },
+        'Thiên Sứ': { type: 'hung' }, 
 
-        // ── Vòng Thái Tuế (12 sao, khởi chi năm, thuận) ──
+        // ── Vòng Thái Tuế
         'Thái Tuế': { type: 'hung' },
         'Thiếu Dương': { type: 'cat' },
+        'Hối Khí': { type: 'cat' },
         'Tang Môn': { type: 'hung' },
         'Thiếu Âm': { type: 'cat' },
+        'Quán Sách': { type: 'cat' },
         'Quan Phù': { type: 'hung' },
         'Tử Phù': { type: 'hung' },
+        'Tiểu Hao-TT': { type: 'hung' },
         'Tuế Phá': { type: 'hung' },
         'Long Đức': { type: 'cat' },
         'Bạch Hổ': { type: 'hung' },
         'Phúc Đức': { type: 'cat' },
+        'Thiên Đức': { type: 'cat' },
         'Điếu Khách': { type: 'hung' },
         'Trực Phù': { type: 'hung' },
+        'Bệnh Phù-TT': { type: 'hung' },
 
         // ── Sao theo CHI năm ──
         'Thiên Mã': { type: 'cat' },
@@ -343,27 +353,6 @@
 
       // ── Bảng tra phụ tinh — từ CSV ──────────────────────────
 
-      // Theo THIÊN CAN năm sinh [canNam 0..9]
-      const SAO_THEO_CAN = {
-        'Lộc Tồn': [2, 3, 5, 6, 5, 6, 8, 9, 11, 0],
-        'Kình Dương': [3, 4, 6, 7, 6, 7, 9, 10, 0, 1],
-        'Đà La': [1, 2, 4, 5, 4, 5, 7, 8, 10, 11],
-        'Thiên Khôi': [1, 0, 11, 11, 1, 0, 6, 6, 3, 3],
-        'Thiên Việt': [7, 8, 9, 9, 7, 8, 2, 2, 5, 5],
-        'Quốc Ấn': [10, 11, 1, 2, 1, 2, 4, 5, 7, 8],
-        'Đường Phù': [7, 8, 10, 11, 10, 11, 1, 2, 4, 5],
-        'Thiên Quan': [7, 4, 5, 2, 3, 9, 11, 9, 10, 6],
-        'Thiên Phúc': [9, 8, 0, 11, 3, 2, 6, 5, 6, 5],
-        'Lưu Hà': [9, 10, 7, 8, 0, 6, 3, 4, 11, 2],
-        // Giáp(0)=Tị(5), Ất(1)=Ngọ(6), Bính(2)=Tý(0), Đinh(3)=Tị(5), Mậu(4)=Ngọ(6),
-        // Kỷ(5)=Thân(8), Canh(6)=Dần(2), Tân(7)=Ngọ(6), Nhâm(8)=Dậu(9), Quý(9)=Tuất(10)
-        'Thiên Trù': [5, 6, 0, 5, 6, 8, 2, 6, 9, 10],
-        'Thiên La': [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-        'Địa Võng': [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-        // Giáp=Tị(5), Ất=Ngọ(6), Bính=Thân(8), Đinh=Dậu(9), Mậu=Thân(8),
-        // Kỷ=Dậu(9), Canh=Hợi(11), Tân=Tý(0), Nhâm=Dần(2), Quý=Mão(3)
-        'Lưu Niên Văn Tinh': [5, 6, 8, 9, 8, 9, 11, 0, 2, 3],
-      };
       // Triệt: [chi1, chi2] theo canNam 0..9
       const TRIET = [[8, 9], [6, 7], [4, 5], [2, 3], [0, 1], [8, 9], [6, 7], [4, 5], [2, 3], [0, 1]];
 
@@ -383,43 +372,7 @@
         [null, [8, 9], null, [6, 7], null, [4, 5], null, [2, 3], null, [0, 1]],     // Hợi
       ];
 
-      // Theo ĐỊA CHI năm sinh [chiNam 0..11]
-      const SAO_THEO_NAM = {
-        'Thiên Mã': [2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8, 5],
-        'Phá Toái': [5, 1, 9, 5, 1, 9, 5, 1, 9, 5, 1, 9],
-        'Cô Thần': [2, 2, 5, 5, 5, 8, 8, 8, 11, 11, 11, 2],
-        'Quả Tú': [10, 10, 1, 1, 1, 4, 4, 4, 7, 7, 7, 10],
-        'Thiên Không': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0],
-        'Thiên Khốc': [6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7],
-        'Thiên Hư': [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5],
-        'Nguyệt Đức': [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4],
-        'Hồng Loan': [3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4],
-        'Thiên Hỉ': [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10],
-        'Long Trì': [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3],
-        'Phượng Các': [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11],
-        'Giải Thần': [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11],
-        'Niên Giải': [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11],
-        'Đào Hoa': [9, 6, 3, 0, 9, 6, 3, 0, 9, 6, 3, 0],
-        // Tý=0,Sửu=1,Dần=2,Mão=3,Thìn=4,Tị=5,Ngọ=6,Mùi=7,Thân=8,Dậu=9,Tuất=10,Hợi=11
-        // Kiếp Sát: Dần/Ngọ/Tuất→Hợi(11), Tị/Dậu/Sửu→Dần(2), Thân/Tý/Thìn→Tị(5), Hợi/Mão/Mùi→Thân(8)
-        'Kiếp Sát': [5, 2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8],
-        // Hoa Cái: Hợi/Mão/Mùi→Mùi(7), Tị/Dậu/Sửu→Sửu(1), Thân/Tý/Thìn→Thìn(4), Dần/Ngọ/Tuất→Tuất(10)
-        'Hoa Cái': [4, 1, 10, 7, 4, 1, 10, 7, 4, 1, 10, 7],
-      };
-
-      // SAO_THEO_THANG được định nghĩa theo method ở file method tương ứng.
-
-      // Theo ĐỊA CHI GIỜ sinh [chiGio 0..11]
-      const SAO_THEO_GIO = {
-        'Văn Xương': [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11],
-        'Văn Khúc': [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3],
-        'Thai Phụ': [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5],
-        'Phong Cáo': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1],
-        'Địa Không': [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
-        'Địa Kiếp': [11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      };
-
-      // SAO_HANH được định nghĩa theo method ở file method tương ứng.
+      // SAO_THEO_THANG và SAO_HANH được định nghĩa theo method ở file method tương ứng.
 
       // ── Export ───────────────────────────────────────────────
       return {
@@ -429,8 +382,6 @@
         BANG_TU_VI, VONG_TU_VI, THIEN_PHU, VONG_THIEN_PHU,
         TRUONG_SINH_KHOI, TRUONG_SINH_TEN,
         SAO_META,
-        SAO_THEO_CAN, TRIET, TUAN,
-        SAO_THEO_NAM,
-        SAO_THEO_GIO,
+        TRIET, TUAN,
       };
     })();

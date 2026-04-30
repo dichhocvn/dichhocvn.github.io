@@ -284,6 +284,7 @@ const TUVI_RENDER = (() => {
           'L.Kình Dương', 'L.Đà La', 'ĐV.Kình Dương', 'ĐV.Đà La',
           'L.Thiên Khôi', 'L.Thiên Việt',
           'L.Tang Môn', 'L.Bạch Hổ', 'L.Thiên Khốc', 'L.Thiên Hư',
+          'L.Đại Hao', 'L.Tiểu Hao',
         ]);
         const chiDVMenh = xemHan ? tinhCungDVHienTai(meta, namXem) : null;
 
@@ -319,6 +320,11 @@ const TUVI_RENDER = (() => {
           && ANSAO_THAITHULANG.TABLES.LUU_SAO_THEO_CHI)
           ? ANSAO_THAITHULANG.TABLES.LUU_SAO_THEO_CHI
           : {};
+        const ttlLuuTheoCan = (typeof ANSAO_THAITHULANG !== 'undefined'
+          && ANSAO_THAITHULANG.TABLES
+          && ANSAO_THAITHULANG.TABLES.LUU_SAO_THEO_CAN)
+          ? ANSAO_THAITHULANG.TABLES.LUU_SAO_THEO_CAN
+          : {};
         const lSaoTheoChiMethod = currentMethod === 'thaithulang'
           ? {
             ...L_SAO_THEO_CHI,
@@ -328,6 +334,9 @@ const TUVI_RENDER = (() => {
             ...ttlLuuTheoChi,
           }
           : L_SAO_THEO_CHI;
+        const lSaoTheoCanMethod = currentMethod === 'thaithulang'
+          ? { ...L_SAO_THEO_CAN, ...ttlLuuTheoCan }
+          : L_SAO_THEO_CAN;
 
         const dvSaoMap = {}; // chiIndex → [tên sao lưu]
         if (chiDVMenh !== null) {
@@ -346,7 +355,7 @@ const TUVI_RENDER = (() => {
           });
           // An sao L. theo thiên can năm xem hạn
           const canNamXem = ((namXem - 4) % 10 + 10) % 10;
-          Object.entries(L_SAO_THEO_CAN).forEach(([tenSao, arr]) => {
+          Object.entries(lSaoTheoCanMethod).forEach(([tenSao, arr]) => {
             const chiSao = arr[canNamXem];
             if (!dvSaoMap[chiSao]) dvSaoMap[chiSao] = [];
             dvSaoMap[chiSao].push(tenSao);

@@ -3,6 +3,7 @@
 // ============================================================
 
 const TUVI_THIENCAN_UTIL = (() => {
+  const NAMES = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
   const KEYS = ["giap", "at", "binh", "dinh", "mau", "ky", "canh", "tan", "nham", "quy"];
 
   function keyToIdx(key) {
@@ -12,9 +13,11 @@ const TUVI_THIENCAN_UTIL = (() => {
   }
 
   function nameToIdx(name, canList) {
-    const source = Array.isArray(canList) ? canList : (TUVI_DATA && TUVI_DATA.CAN) || [];
+    const source = Array.isArray(canList) ? canList : NAMES;
     return source.indexOf(name);
   }
 
-  return { KEYS, keyToIdx, nameToIdx };
+  return { NAMES, KEYS, keyToIdx, nameToIdx };
 })();
+
+globalThis.TUVI_THIENCAN_UTIL = TUVI_THIENCAN_UTIL;

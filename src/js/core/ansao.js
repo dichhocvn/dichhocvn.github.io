@@ -15,98 +15,6 @@ const ANSAO_SHARED = (() => {
     return Math.floor(((h + 1) % 24) / 2);
   }
 
-  function tinhViTriSaoTrungChau(D, canNam, chiNam, chiGio, thang, ngay, chiTV, thuanChieu, chiCungMenh, chiCungThan) {
-    const chiTF = D.THIEN_PHU[chiTV];
-    const chinh = {
-      'Tử Vi': chiTV,
-      'Thiên Cơ': D.VONG_TU_VI['Thiên Cơ'][chiTV],
-      'Thái Dương': D.VONG_TU_VI['Thái Dương'][chiTV],
-      'Vũ Khúc': D.VONG_TU_VI['Vũ Khúc'][chiTV],
-      'Thiên Đồng': D.VONG_TU_VI['Thiên Đồng'][chiTV],
-      'Liêm Trinh': D.VONG_TU_VI['Liêm Trinh'][chiTV],
-      'Thiên Phủ': chiTF,
-      'Thái Âm': D.VONG_THIEN_PHU['Thái Âm'][chiTF],
-      'Tham Lang': D.VONG_THIEN_PHU['Tham Lang'][chiTF],
-      'Cự Môn': D.VONG_THIEN_PHU['Cự Môn'][chiTF],
-      'Thiên Tướng': D.VONG_THIEN_PHU['Thiên Tướng'][chiTF],
-      'Thiên Lương': D.VONG_THIEN_PHU['Thiên Lương'][chiTF],
-      'Thất Sát': D.VONG_THIEN_PHU['Thất Sát'][chiTF],
-      'Phá Quân': D.VONG_THIEN_PHU['Phá Quân'][chiTF],
-    };
-
-    const phu_can = {};
-    Object.entries(D.SAO_THEO_CAN).forEach(([ten, arr]) => { phu_can[ten] = arr[canNam]; });
-
-    const phu_nam = {};
-    Object.entries(D.SAO_THEO_NAM).forEach(([ten, arr]) => { phu_nam[ten] = arr[chiNam]; });
-
-    const phu_hoa = (typeof D.computeHoaLinhPositions === 'function')
-      ? D.computeHoaLinhPositions({ chiNam, chiGio, thuanChieu })
-      : {
-          'Hỏa Tinh': (D.HOA_TINH_KHOI[chiNam] + chiGio - 1 + 12) % 12,
-          'Linh Tinh': (D.LINH_TINH_KHOI[chiNam] - chiGio + 1 + 12) % 12,
-        };
-
-    const phu_thang = {};
-    Object.entries(D.SAO_THEO_THANG).forEach(([ten, arr]) => { phu_thang[ten] = arr[thang - 1]; });
-
-    const phu_gio = {};
-    Object.entries(D.SAO_THEO_GIO).forEach(([ten, arr]) => { phu_gio[ten] = arr[chiGio]; });
-
-    const chiVX = D.SAO_THEO_GIO['Văn Xương'][chiGio];
-    const chiVK = D.SAO_THEO_GIO['Văn Khúc'][chiGio];
-    const phu_gio_ngay = {
-      'Ân Quang': (chiVX + ngay - 2 + 12) % 12,
-      'Thiên Quý': ((chiVK - ngay + 2) % 12 + 12) % 12,
-    };
-
-    const chiTP = D.SAO_THEO_THANG['Tả Phụ'][thang - 1];
-    const chiHB = D.SAO_THEO_THANG['Hữu Bật'][thang - 1];
-    const phu_thang_ngay = {
-      'Tam Thai': (chiTP + ngay - 1) % 12,
-      'Bát Tọa': ((chiHB - ngay + 1) % 12 + 12) % 12,
-    };
-
-    const chiLocTon = D.SAO_THEO_CAN['Lộc Tồn'][canNam];
-    const phu_bac_si = (typeof D.computeBacSiRing === 'function')
-      ? D.computeBacSiRing({ chiLocTon, thuanChieu })
-      : (() => {
-          const VONG_BAC_SI = [
-            'Bác Sĩ', 'Lực Sĩ', 'Thanh Long', 'Tiểu Hao',
-            'Tướng Quân', 'Tấu Thư', 'Phi Liêm', 'Hỉ Thần',
-            'Bệnh Phù', 'Đại Hao', 'Phục Binh', 'Quan Phủ',
-          ];
-          const out = {};
-          VONG_BAC_SI.forEach((ten, i) => {
-            out[ten] = thuanChieu ? (chiLocTon + i) % 12 : (chiLocTon - i + 12) % 12;
-          });
-          return out;
-        })();
-
-    const phu_thai_tue = (typeof D.computeThaiTueRing === 'function')
-      ? D.computeThaiTueRing({ chiNam })
-      : (() => {
-          const VONG_THAI_TUE = [
-            'Thái Tuế', 'Thiếu Dương', 'Tang Môn', 'Thiếu Âm',
-            'Quan Phù', 'Tử Phù', 'Tuế Phá', 'Long Đức',
-            'Bạch Hổ', 'Phúc Đức', 'Điếu Khách', 'Trực Phù',
-          ];
-          const out = {};
-          VONG_THAI_TUE.forEach((ten, i) => { out[ten] = (chiNam + i) % 12; });
-          return out;
-        })();
-
-    const phu_tai_tho = {
-      'Thiên Tài': (chiCungMenh + chiNam) % 12,
-      'Thiên Thọ': (chiCungThan + chiNam) % 12,
-    };
-
-    const chiDauQuan = ((chiNam - (thang - 1) + 12) % 12 + chiGio) % 12;
-    const phu_dau_quan = { 'Đẩu Quân': chiDauQuan };
-
-    return Object.assign({}, chinh, phu_can, phu_nam, phu_hoa, phu_thang, phu_gio, phu_gio_ngay, phu_thang_ngay, phu_bac_si, phu_thai_tue, phu_tai_tho, phu_dau_quan);
-  }
-
   function computeByTrungChau({ hoTen, ngay, thang, nam, gioSinh, gioiTinh }, dataOverride) {
     const D = dataOverride || BASE_DATA;
     const chiGio = chiGioFromStr(gioSinh);
@@ -124,7 +32,19 @@ const ANSAO_SHARED = (() => {
     const namDuong = canNam % 2 === 0;
     const thuanChieu = (gioiTinh === 'nam') ? namDuong : !namDuong;
 
-    const viTriSao = tinhViTriSaoTrungChau(D, canNam, chiNam, chiGio, thang, ngay, chiTV, thuanChieu, chiCungMenh, chiCungThan);
+    const viTriSao = (typeof D.computeStarPositions === 'function')
+      ? D.computeStarPositions({
+          canNam,
+          chiNam,
+          chiGio,
+          thang,
+          ngay,
+          chiTV,
+          thuanChieu,
+          chiCungMenh,
+          chiCungThan,
+        })
+      : {};
 
     const HOA_TEN = ['Hóa Lộc', 'Hóa Quyền', 'Hóa Khoa', 'Hóa Kỵ'];
     const hoaViTri = {};
@@ -155,10 +75,12 @@ const ANSAO_SHARED = (() => {
       saoTrongChi[chi].hung.push({ name: 'Triệt', type: 'hung', sucManh: '', hoaKy: null, nguHanh: '' });
     });
 
-    const chiNoBoc = (chiCungMenh + 5) % 12;
-    const chiTatAch = (chiCungMenh + 7) % 12;
-    saoTrongChi[chiNoBoc].hung.push({ name: 'Thiên Thương', type: 'hung', sucManh: '', hoaKy: null, nguHanh: hanhDon(D.SAO_HANH['Thiên Thương'] || '') });
-    saoTrongChi[chiTatAch].hung.push({ name: 'Thiên Sứ', type: 'hung', sucManh: '', hoaKy: null, nguHanh: hanhDon(D.SAO_HANH['Thiên Sứ'] || '') });
+    const thuongSu = (typeof D.computeThienThuongThienSu === 'function')
+      ? D.computeThienThuongThienSu({ chiCungMenh, thuanChieu })
+      : {};
+    Object.entries(thuongSu).forEach(([ten, chi]) => {
+      saoTrongChi[chi].hung.push({ name: ten, type: 'hung', sucManh: '', hoaKy: null, nguHanh: hanhDon(D.SAO_HANH[ten] || '') });
+    });
 
     const daiHanMap = {};
     for (let i = 0; i < 12; i++) {
