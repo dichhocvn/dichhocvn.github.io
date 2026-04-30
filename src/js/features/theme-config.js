@@ -276,6 +276,16 @@
       return `https://lyso.vn/lasotuvi/${gtToken}/${payload}/${namXH}/${encodeURIComponent(hoTen)}.jpg`;
     }
 
+    function addSolarDays(dd, mm, yy, deltaDays) {
+      const d = new Date(yy, mm - 1, dd);
+      d.setDate(d.getDate() + deltaDays);
+      return {
+        dd: d.getDate(),
+        mm: d.getMonth() + 1,
+        yy: d.getFullYear(),
+      };
+    }
+
     function renderLysoFromSearchResult(row) {
       return renderLysoApiImage(buildLysoApiImageUrlFromSearchResult(row));
     }
@@ -374,10 +384,15 @@
       const dd = parseInt(document.getElementById('ngayDL').value);
       const mm = parseInt(document.getElementById('thangDL').value);
       const yy = parseInt(document.getElementById('namDL').value);
+      const gioObj = parseTimeText(document.getElementById('gio')?.value || '');
       const res = document.getElementById('dlResult');
       if (!dd || !mm || !yy) { res.textContent = ''; return; }
       try {
-        const lunar = solar2Lunar(dd, mm, yy);
+        // Quy ước Tử Vi: với input Dương lịch, mốc 23:00-23:59 tính sang ngày mới.
+        const baseSolar = (gioObj && gioObj.hh === 23)
+          ? addSolarDays(dd, mm, yy, 1)
+          : { dd, mm, yy };
+        const lunar = solar2Lunar(baseSolar.dd, baseSolar.mm, baseSolar.yy);
         res.innerHTML = `→ Âm lịch: <b>${lunar.ngay}/${lunar.thang}${lunar.nhuan ? ' (nhuận)' : ''}/${lunar.nam}</b>`;
         // Điền vào ô âm lịch ẩn để lapLaSo dùng
         document.getElementById('ngay').value = lunar.ngay;

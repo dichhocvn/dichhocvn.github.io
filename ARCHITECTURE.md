@@ -6,7 +6,7 @@
 - Render la so tu JSON (xem han chi active khi co nam cu the; center hien Nam han da chon) -> `src/js/render/tuvi-render.js` + `src/js/render/tuvi-render-modules.js` (bao gom pill engine + center renderer)
 - Rule parser/matcher + dialog rule -> `src/js/render/tuvi-render-modules.js` + `src/js/rules/rules-data.js`
 - Sua/noi dung rule theo cung -> `src/rules/*.txt` (nguon editable) va dong bo sang `src/js/rules/rules-data.js`
-- Doi Duong<->Am, helper lich, validate ngay DL/AL truoc Lập lá số + dialog `#lapSoValidationOverlay` -> `src/js/features/lunar-calendar.js` + `src/js/features/lap-so-dialog.js` (`lapLaSo` trong `src/js/app/controller-core.js`)
+- Doi Duong<->Am, helper lich, validate ngay DL/AL truoc Lập lá số + dialog `#lapSoValidationOverlay`; voi input DL gio `23:00-23:59` thi doi sang ngay duong ke tiep truoc khi convert sang am -> `src/js/features/lunar-calendar.js` + `src/js/features/lap-so-dialog.js` + `src/js/features/theme-config.js` (`lapLaSo` trong `src/js/app/controller-core.js`)
 - Nhan mui ten gio + nhay ngay/thang/nam AL + init ngay/gio hien tai AL/DL (gio nav doc lap voi xem han) -> `src/js/features/gio-controls.js`
 - Nam xem han -> `src/js/features/han-controls.js`
 - Prompt export/JSON export -> `src/js/features/prompt-export.js`

@@ -1,9 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
-const { assert, solar2Lunar } = require("./test-lib");
+const { assert, TUVI_LOGIC, solar2Lunar, validateSolarDateInput } = require("./test-lib");
 
 const ROOT = path.resolve(__dirname, "..");
+const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tị", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
 
 function createSandbox() {
   const els = {};
@@ -114,7 +115,150 @@ function loadThemeAndTabs(sandbox) {
   vm.runInContext(fs.readFileSync(tabPath, "utf8"), ctx, { filename: "tab-switching.js" });
 }
 
+function buildDlSandbox({ dd, mm, yy, gio }) {
+  const { sandbox, el } = createSandbox();
+  el("cfgPanel", { querySelectorAll() { return []; } });
+  el("templateSelect", { value: "classic", dataset: { lysoKeep: "1" } });
+  el("gio", { value: gio });
+  el("ngayDL", { value: String(dd) });
+  el("thangDL", { value: String(mm) });
+  el("namDL", { value: String(yy) });
+  el("ngay", { value: "" });
+  el("thang", { value: "" });
+  el("nam", { value: "" });
+  el("dlResult", { textContent: "", innerHTML: "" });
+  ["ngayDL", "thangDL", "namDL"].forEach((id) => {
+    const node = sandbox.document.getElementById(id);
+    if (node) node.addEventListener = () => {};
+  });
+  loadThemeAndTabs(sandbox);
+  return sandbox;
+}
+
+function computeFromDlUiInput({ dd, mm, yy, gio, gioiTinh }) {
+  const sandbox = buildDlSandbox({ dd, mm, yy, gio });
+  sandbox.convertDL();
+  return TUVI_LOGIC.compute({
+    hoTen: "Solar UI Test",
+    ngay: Number.parseInt(sandbox.document.getElementById("ngay").value, 10),
+    thang: Number.parseInt(sandbox.document.getElementById("thang").value, 10),
+    nam: Number.parseInt(sandbox.document.getElementById("nam").value, 10),
+    gioSinh: sandbox.document.getElementById("gio").value,
+    gioiTinh,
+  });
+}
+
+function quanHeMenhCuc(meta, menhChi) {
+  const hanhNapAm = (meta.napAm || "")
+    .split(" ")
+    .pop()
+    .toLowerCase()
+    .replace("thủy", "thuy")
+    .replace("mộc", "moc")
+    .replace("hỏa", "hoa")
+    .replace("thổ", "tho");
+  const tenCuc = String(meta.tenCuc || "");
+  const cucSo = tenCuc.includes("Nhị")
+    ? 2
+    : tenCuc.includes("Tam")
+      ? 3
+      : tenCuc.includes("Tứ")
+        ? 4
+        : tenCuc.includes("Ngũ")
+          ? 5
+          : tenCuc.includes("Lục")
+            ? 6
+            : 0;
+  const hanhCuc = { 2: "thuy", 3: "moc", 4: "kim", 5: "tho", 6: "hoa" }[cucSo] || "";
+  const sinh = { kim: "thuy", thuy: "moc", moc: "hoa", hoa: "tho", tho: "kim" };
+  const khac = { kim: "moc", thuy: "hoa", moc: "tho", hoa: "kim", tho: "thuy" };
+  const chiMenhIdx = CHI.indexOf(menhChi);
+  const chiMenhAmDuong = chiMenhIdx % 2 === 1 ? "am" : "duong";
+  const amDuong = meta.gioiTinh === "nam"
+    ? (meta.thuanChieu ? "Dương Nam" : "Âm Nam")
+    : (meta.thuanChieu ? "Âm Nữ" : "Dương Nữ");
+  const nguoiAmDuong = (amDuong === "Âm Nam" || amDuong === "Âm Nữ") ? "am" : "duong";
+  const amDuongLy = (nguoiAmDuong === chiMenhAmDuong) ? "Âm Dương Thuận Lý" : "Âm Dương Nghịch Lý";
+  let menhCuc = "Mệnh Cục Bình Hòa";
+  if (sinh[hanhNapAm] === hanhCuc) menhCuc = "Mệnh Sinh Cục";
+  else if (sinh[hanhCuc] === hanhNapAm) menhCuc = "Cục Sinh Mệnh";
+  else if (khac[hanhNapAm] === hanhCuc) menhCuc = "Mệnh Khắc Cục";
+  else if (khac[hanhCuc] === hanhNapAm) menhCuc = "Cục Khắc Mệnh";
+  return { menhCuc, amDuongLy };
+}
+
 module.exports = [
+  {
+    name: "laso-flow: DL UI input 31/02/2050 is rejected as invalid date",
+    fn: () => {
+      const out = validateSolarDateInput(31, 2, 2050);
+      assert.equal(out.ok, false);
+    },
+  },
+  {
+    name: "laso-flow: DL UI input 28/02/2050 00:30 nu validates expected an sao data",
+    fn: () => {
+      const laso = computeFromDlUiInput({
+        dd: 28,
+        mm: 2,
+        yy: 2050,
+        gio: "00:30",
+        gioiTinh: "nu",
+      });
+      const menh = laso.cung.find((c) => c.cungChuc === "Mệnh");
+      const huynhDe = laso.cung.find((c) => c.cungChuc === "Huynh Đệ");
+      const thanCung = laso.cung.find((c) => c.isThan);
+      assert.ok(menh);
+      assert.equal(menh.diaChi, "Mão");
+      assert.ok(menh.sao.some((s) => s.name === "Thiên Tướng"));
+      assert.ok(menh.sao.some((s) => s.name === "Đào Hoa"));
+      assert.equal(menh.daiVan, 5);
+      assert.equal(huynhDe?.daiVan, 15);
+      assert.equal(thanCung?.diaChi, "Mão");
+      const relation = quanHeMenhCuc(laso.meta, menh.diaChi);
+      assert.equal(relation.amDuongLy, "Âm Dương Nghịch Lý");
+    },
+  },
+  {
+    name: "laso-flow: DL UI input 08/08/2008 23:30 maps to Menh Than with Liem Trinh",
+    fn: () => {
+      const laso = computeFromDlUiInput({
+        dd: 8,
+        mm: 8,
+        yy: 2008,
+        gio: "23:30",
+        gioiTinh: "nam",
+      });
+      const menh = laso.cung.find((c) => c.cungChuc === "Mệnh");
+      assert.ok(menh);
+      assert.equal(menh.diaChi, "Thân");
+      assert.ok(menh.sao.some((s) => s.name === "Liêm Trinh"));
+    },
+  },
+  {
+    name: "laso-flow: DL UI input 08/08/2008 10:30 validates expected an sao data",
+    fn: () => {
+      const laso = computeFromDlUiInput({
+        dd: 8,
+        mm: 8,
+        yy: 2008,
+        gio: "10:30",
+        gioiTinh: "nam",
+      });
+      const menh = laso.cung.find((c) => c.cungChuc === "Mệnh");
+      assert.ok(menh);
+      assert.equal(menh.diaChi, "Mão");
+      assert.ok(menh.sao.some((s) => s.name === "Thiên Tướng"));
+      assert.ok(menh.sao.some((s) => s.name === "Thiên Hình"));
+      assert.equal(menh.daiVan, 2);
+      assert.equal(laso.meta.napAm, "Tích Lịch Hỏa");
+      const relation = quanHeMenhCuc(laso.meta, menh.diaChi);
+      assert.equal(relation.menhCuc, "Cục Khắc Mệnh");
+      assert.equal(relation.amDuongLy, "Âm Dương Nghịch Lý");
+      assert.deepEqual((laso.meta.viTriTuan || []).map((i) => CHI[i]), ["Ngọ", "Mùi"]);
+      assert.deepEqual((laso.meta.viTriTriet || []).map((i) => CHI[i]), ["Tý", "Sửu"]);
+    },
+  },
   {
     name: "laso-flow: apply lyso switches to API image immediately",
     fn: () => {

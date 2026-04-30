@@ -20,7 +20,7 @@
 - Rule runtime data: `src/js/rules/rules-data.js`
 - Rule nguồn editable: `src/rules/*.txt`
 - Đồng bộ txt -> runtime rules: `python3 scripts/sync_rules.py`
-- Đổi Dương↔Âm + kiểm tra ngày Dương/Âm trước khi Lập lá số (dialog `#lapSoValidationOverlay`): `src/js/features/lunar-calendar.js` + `src/js/features/lap-so-dialog.js`; `lapLaSo`: `src/js/app/controller-core.js`
+- Đổi Dương↔Âm + kiểm tra ngày Dương/Âm trước khi Lập lá số (dialog `#lapSoValidationOverlay`); với tab DL, giờ sinh `23:00-23:59` thì cộng 1 ngày dương trước khi đổi sang âm: `src/js/features/lunar-calendar.js` + `src/js/features/lap-so-dialog.js` + `src/js/features/theme-config.js`; `lapLaSo`: `src/js/app/controller-core.js`
 - Mũi tên giờ + nhảy ngày/tháng/năm ÂL + init ngày/giờ hiện tại (giờ nav độc lập xem hạn; bind click theo id `#btnGioXemPrev/#btnGioXemNext`): `src/js/features/gio-controls.js`
 - Năm xem hạn (bind click theo id `#btnNamXemPrev/#btnNamXemNext`): `src/js/features/han-controls.js`
 - Chatbot (desktop đang ẩn, nút dưới cùng cột trái disabled vì chưa hỗ trợ bật lại): `src/js/features/chatbot.js`
