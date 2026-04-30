@@ -700,7 +700,7 @@
 
       body[data-layout="mobile"] #hanNavBar {
         gap: 8px !important;
-        padding: 0 2px;
+        padding: 3px 2px 0;
       }
 
       body[data-layout="mobile"] #namNavControls,

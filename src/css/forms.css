@@ -159,9 +159,11 @@
 
     /* ── Lá số wrapper ──────────────────────────────────────── */
     .laso-wrap {
+      --laso-cell-height: 5.7cm;
+      --laso-overflow-top-reserve: 50px;
       display: none;
       text-align: center;
-      padding-top: 10px;
+      padding-top: var(--laso-overflow-top-reserve);
       padding-bottom: 2px;
     }
 
@@ -169,7 +171,7 @@
     /* Wrapper responsive */
     .grid-scaler-outer {
       width: 100%;
-      overflow: hidden;
+      overflow: visible;
       box-sizing: border-box;
       display: flex;
       justify-content: center;

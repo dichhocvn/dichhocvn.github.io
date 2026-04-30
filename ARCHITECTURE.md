@@ -15,7 +15,7 @@
 - Chatbot (desktop đang ẩn; nút dưới cùng cột trái hiện trạng thái disabled, chưa cho bật lại) -> `src/js/features/chatbot.js`
 - CSS layout co ban (toàn page padding 2px; desktop khi chatbot ẩn thì formArea chiếm full chiều cao còn lại) -> `src/css/base.css`
 - CSS chat -> `src/css/chat.css`
-- CSS form/tab/grid wrapper (search nav class-based + responsive + margin-bottom 2px cho grid mobile; mobile chọn ngày/tháng/giờ bằng select; tab panel full-height trên desktop khi chatbot ẩn; tab bar sticky trên desktop khi cuộn form) -> `src/css/forms.css` + `src/js/features/form-mobile-pickers.js`
+- CSS form/tab/grid wrapper (search nav class-based + responsive + margin-bottom 2px cho grid mobile; mobile chọn ngày/tháng/giờ bằng select; tab panel full-height trên desktop khi chatbot ẩn; tab bar sticky trên desktop khi cuộn form; reserve top cho lá số `--laso-overflow-top-reserve`) -> `src/css/forms.css` + `src/js/features/form-mobile-pickers.js`
 - CSS grid cung/sao/highlight/pill (han-nav class-based + responsive; tăng z-index khu chính tinh, chỉnh header vị trí 1/3 cân nhau để vị trí 2 centered; cát tinh cho phép overflow, sao hung vị trí 6 căn phải theo cột hung, một dòng và canh mép phải ổn định để không đè viền) -> `src/css/grid.css`
 - CSS modal prompt/rule -> `src/css/modals.css`
 
