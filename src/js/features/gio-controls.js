@@ -64,7 +64,8 @@
       const namXem = document.getElementById('namXem');
       const btnNamPrev = document.getElementById('btnNamXemPrev');
       const btnNamNext = document.getElementById('btnNamXemNext');
-      if (bar) bar.style.display = xemHan ? 'flex' : 'none';
+      const lysoImg = typeof isLysoTemplateActive === 'function' && isLysoTemplateActive();
+      if (bar) bar.style.display = lysoImg ? 'none' : (xemHan ? 'flex' : 'none');
       if (namNav) namNav.classList.toggle('han-disabled', !xemHan);
       if (gioNav) gioNav.classList.remove('han-disabled');
       if (namXem) namXem.classList.toggle('han-disabled', !xemHan);

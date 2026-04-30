@@ -5,6 +5,7 @@ const suites = [
   ...require("./stars.test"),
   ...require("./search-laso-counts.test"),
   ...require("./ui-state.test"),
+  ...require("./laso-flow.test"),
 ];
 
 for (const t of suites) {

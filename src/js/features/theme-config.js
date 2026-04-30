@@ -82,10 +82,19 @@
       const apiWrap = document.getElementById('lysoApiWrap');
       const legend = document.querySelector('.legend');
       const promptBtn = document.querySelector('.btn-prompt');
+      const luuBar = document.getElementById('luuModeBar');
       if (gridWrap) gridWrap.style.display = useApiImage ? 'none' : '';
       if (apiWrap) apiWrap.style.display = useApiImage ? 'block' : 'none';
       if (legend) legend.style.display = useApiImage ? 'none' : '';
       if (promptBtn) promptBtn.style.display = useApiImage ? 'none' : '';
+      // Ảnh lyso không phản ánh chế độ an sao lưu — ẩn thanh chọn khi dùng API
+      if (luuBar) {
+        if (useApiImage) luuBar.style.display = 'none';
+        else {
+          const xemHan = document.getElementById('chkXemHan')?.checked ?? true;
+          luuBar.style.display = xemHan ? 'flex' : 'none';
+        }
+      }
     }
 
     function renderLysoApiImage(imageUrl) {
