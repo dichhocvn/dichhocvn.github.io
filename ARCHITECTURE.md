@@ -3,8 +3,8 @@
 ## Quick route task -> file
 - Tinh toan la so tu input -> `src/js/core/logic.js`
 - Bang tra sao, du lieu co dinh -> `src/js/core/data.js`
-- Render la so tu JSON (xem han chi active khi co nam cu the; center hien Nam han da chon) -> `src/js/render/tuvi-render.js`
-- Rule parser/matcher + dialog rule -> `src/js/render/tuvi-render.js` + `src/js/rules/rules-data.js`
+- Render la so tu JSON (xem han chi active khi co nam cu the; center hien Nam han da chon) -> `src/js/render/tuvi-render.js` + `src/js/render/tuvi-render-modules.js` (bao gom pill engine + center renderer)
+- Rule parser/matcher + dialog rule -> `src/js/render/tuvi-render-modules.js` + `src/js/rules/rules-data.js`
 - Sua/noi dung rule theo cung -> `src/rules/*.txt` (nguon editable) va dong bo sang `src/js/rules/rules-data.js`
 - Doi Duong<->Am, helper lich -> `src/js/features/lunar-calendar.js`
 - Nhan mui ten gio + nhay ngay/thang/nam AL + init ngay/gio hien tai AL/DL (gio nav doc lap voi xem han) -> `src/js/features/gio-controls.js`

@@ -15,8 +15,8 @@
 ## Route task -> file
 - Tính lá số từ input: `src/js/core/logic.js`
 - Bảng tra dữ liệu sao: `src/js/core/data.js`
-- Render từ JSON + highlight + pills (xem hạn chỉ active khi đã chọn năm; center hiển thị Năm hạn): `src/js/render/tuvi-render.js`
-- Rule matcher/dialog: `src/js/render/tuvi-render.js`
+- Render từ JSON + highlight + pills (xem hạn chỉ active khi đã chọn năm; center hiển thị Năm hạn; pill engine + center renderer nằm ở module shared): `src/js/render/tuvi-render.js` + `src/js/render/tuvi-render-modules.js`
+- Rule matcher/dialog: `src/js/render/tuvi-render-modules.js`
 - Rule runtime data: `src/js/rules/rules-data.js`
 - Rule nguồn editable: `src/rules/*.txt`
 - Đồng bộ txt -> runtime rules: `python3 scripts/sync_rules.py`
