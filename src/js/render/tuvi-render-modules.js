@@ -408,7 +408,6 @@ window.TUVI_RENDER_SHARED.createCenterRenderer = function createCenterRenderer(d
       <circle cx="100" cy="55" r="15" fill="#1a1008"/>
       <circle cx="100" cy="145" r="15" fill="#fff"/>
       <circle cx="100" cy="100" r="90" fill="none" stroke="#1a1008" stroke-width="2"/>
-      ${[0, 1, 2, 3, 4, 5, 6, 7].map(i => { const ang = i * 45 - 90, rad = ang * Math.PI / 180, cx = 100 + 102 * Math.cos(rad), cy = 100 + 102 * Math.sin(rad), que = [[1, 1, 1], [1, 1, 0], [1, 0, 1], [0, 1, 1], [0, 1, 0], [0, 0, 1], [1, 0, 0], [0, 0, 0]][i]; return que.map((h, j) => { const hy = cy + (j - 1) * 5; return h ? `<line x1="${cx - 8}" y1="${hy}" x2="${cx + 8}" y2="${hy}" stroke="#1a1008" stroke-width="2" transform="rotate(${ang + 90},${cx},${cy})"/>` : `<line x1="${cx - 8}" y1="${hy}" x2="${cx - 2}" y2="${hy}" stroke="#1a1008" stroke-width="2" transform="rotate(${ang + 90},${cx},${cy})"/><line x1="${cx + 2}" y1="${hy}" x2="${cx + 8}" y2="${hy}" stroke="#1a1008" stroke-width="2" transform="rotate(${ang + 90},${cx},${cy})"/>`; }).join(''); }).join('')}
     </svg>`;
 
     const row = (label, val, extra = '') => `
@@ -433,16 +432,13 @@ window.TUVI_RENDER_SHARED.createCenterRenderer = function createCenterRenderer(d
           <td style="font-weight:bold;color:#111;white-space:nowrap;padding:1.5px 8px 1.5px 0;vertical-align:top;">Năm hạn:</td>
           <td colspan="2" style="color:${bl};padding:1.5px 0;vertical-align:top;font-weight:700;font-size:13px;">${namXem}</td>
         </tr>` : ''}
-        <tr><td colspan="3" style="padding:3px 0;"><div style="border-top:1px solid #ddd;"></div></td></tr>
         ${row('Âm Dương:', amDuong)}
         ${row('Nạp Âm:', napAm || '—')}
         ${row('Cục:', tenCuc)}
-        <tr><td colspan="3" style="padding:3px 0;"><div style="border-top:1px solid #ddd;"></div></td></tr>
         ${row('Chủ Mệnh:', cungMenhSao)}
         ${row('Chủ Thân:', cungThanSao)}
         ${row('Đại hạn:', thuanChieu ? 'Thuận chiều' : 'Nghịch chiều')}
         ${row('Thân cư:', `Cung ${thanCu}`)}
-        <tr><td colspan="3" style="padding:3px 0;"><div style="border-top:1px solid #ddd;"></div></td></tr>
         <tr><td></td><td colspan="2" style="color:${bl};font-size:11px;padding:1.5px 0;">${amDuongLy}</td></tr>
         <tr><td></td><td colspan="2" style="color:${bl};font-size:11px;padding:1.5px 0;">${quanHeMenhCuc}</td></tr>
         <tr><td></td><td colspan="2" style="color:${bl};font-size:11px;padding:1.5px 0;">Thân cư ${thanCu}</td></tr>

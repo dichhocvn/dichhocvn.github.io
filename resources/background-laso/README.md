@@ -1,7 +1,7 @@
-# Ảnh nền ô trung tâm (thông tin lá số)
+# Ảnh nền ô trung tâm (nguồn đối chiếu)
 
-Đặt file ảnh vào thư mục này (đường dẫn từ gốc project: `resources/background-laso/`). Danh sách file dùng trong app là mảng **`LASO_BG_FILES`** trong `src/js/features/theme-config.js` — thêm/bớt tên file trong mảng cho khớp file thực tế.
+Ảnh thực tế được **host trên repo GitHub** và app load qua URL **`raw.githubusercontent.com`** (xem `LASO_BG_RAW_BASE` + `LASO_BG_FILES` trong `src/js/features/theme-config.js`). Link dạng `github.com/.../blob/...` chỉ là trang HTML — không dùng làm `background-image`.
 
-Trong Cấu hình, dropdown hiển thị **tên không đuôi** (ví dụ `nen1` cho `nen1.jpg`). Option **Âm Dương vector** dùng SVG có sẵn trong ô giữa; **Không nền** ẩn cả ảnh lẫn SVG.
+Thư mục này trong project chỉ để **đồng bộ / chỉnh sửa** ảnh rồi push lên repo `dichhocvn.github.io`; không bắt buộc có bản sao local để chạy site.
 
-Mở `index.html` qua `file://` vẫn load được ảnh cùng thư mục project: JS gán `--laso-center-bg` bằng URL **tuyệt đối** (`new URL(..., location)`), vì nếu chỉ dùng path tương đối trong biến CSS, trình duyệt resolve `url()` theo file **stylesheet** (`src/css/`) → sai đường dẫn.
+Trong Cấu hình: option hiển thị **tên không đuôi**; **Âm Dương vector** = SVG nội bộ; **Không nền** = không ảnh, không SVG.

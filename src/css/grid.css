@@ -5,7 +5,7 @@
       flex-direction: column;
       overflow: visible;
       width: 4.3cm;
-      min-height: 5.7cm;
+      min-height: 6cm;
       position: relative;
       z-index: 1;
     }
@@ -434,14 +434,15 @@
       content: '';
       position: absolute;
       left: 50%;
-      top: 0;
-      bottom: 0;
-      transform: translateX(-50%);
+      top: 50%;
+      transform: translate(-50%, -50%);
       width: min(100%, 4.3cm);
+      height: min(100%, 5.7cm);
       max-width: 4.3cm;
+      max-height: 5.7cm;
       z-index: 0;
       background-image: var(--laso-center-bg, none);
-      background-size: contain;
+      background-size: cover;
       background-repeat: no-repeat;
       background-position: center center;
       opacity: 0;
@@ -449,10 +450,28 @@
     }
 
     #lasoWrap.laso-center-wallpaper-on .center::before {
+      width: min(100%, 8.6cm);
+      height: min(100%, 11.4cm);
+      max-width: 8.6cm;
+      max-height: 11.4cm;
       opacity: 0.5;
     }
 
+    /* Width-first: ưu tiên ngang đủ 2 ô, phần dọc tràn sẽ bị cắt trong center */
+    #lasoWrap.laso-center-width-priority .center::before {
+      background-size: 100% auto;
+    }
+
+    #lasoWrap.laso-center-width-priority .center-bg svg {
+      width: 100%;
+      height: auto;
+    }
+
     #lasoWrap.laso-center-wallpaper-on .center-bg {
+      display: none;
+    }
+
+    #lasoWrap.laso-center-plain .center .center-sep {
       display: none;
     }
 
@@ -597,7 +616,7 @@
       align-items: center;
       justify-content: center;
       gap: 16px;
-      padding-top: 3px;
+      padding: 3px 2px 0;
       margin-bottom: 8px;
       font-family: Arial, sans-serif;
     }
@@ -650,7 +669,12 @@
       font-size: 13px;
       font-weight: bold;
       color: #4a2e08;
-      min-width: 72px;
+      width: 5ch;
+      min-width: 5ch;
+      max-width: 5ch;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
       text-align: center;
     }
 
@@ -676,7 +700,7 @@
 
       body[data-layout="mobile"] #hanNavBar {
         gap: 8px !important;
-        padding: 0 4px;
+        padding: 0 2px;
       }
 
       body[data-layout="mobile"] #namNavControls,

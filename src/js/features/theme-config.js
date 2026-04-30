@@ -25,18 +25,27 @@
     const LASO_BG_STORAGE_KEY = 'tuviLasoBgChoice';
     /** Value trong `<select>` cho SVG Âm Dương (không phải tên file) */
     const LASO_BG_YINYANG = '__yinyang__';
-    /** Đường dẫn tương đối từ `index.html`; ảnh đặt trong `resources/background-laso/` */
-    const LASO_BG_DIR = 'resources/background-laso';
     /**
-     * Danh sách tên file đầy đủ trên đĩa. Label trong CFG = tên không đuôi extension.
+     * Ảnh nền lấy từ repo GitHub (raw; không dùng link blob HTML).
+     * Đổi repo/branch bằng cách sửa prefix + danh sách `LASO_BG_FILES` (đúng tên file trong repo).
      */
+    const LASO_BG_RAW_BASE =
+      'https://raw.githubusercontent.com/dichhocvn/dichhocvn.github.io/main/resources/background-laso';
+    /** Tên file trong repo (value `<select>`); label hiển thị = tên không đuôi */
     const LASO_BG_FILES = [
-      'nen1.jpg',
-      'nen2.jpg',
-      'nen3.jpg',
-      'nen4.jpg',
-      'nen5.jpg',
+      'Chiều Tà.jpg',
+      'Âm Dương 1.jpg',
+      'Âm Dương 2.jpg',
+      'Hoa.jpg',
+      'Trống Đồng.jpg',
     ];
+    /** Các ảnh ưu tiên bám ngang đủ 2 ô (width-first). `Hoa.jpg` giữ mode mặc định. */
+    const LASO_BG_WIDTH_PRIORITY = new Set([
+      'Chiều Tà.jpg',
+      'Âm Dương 1.jpg',
+      'Âm Dương 2.jpg',
+      'Trống Đồng.jpg',
+    ]);
 
     function lasoBgSafeBasename(name) {
       const b = String(name ?? '').trim();
@@ -51,23 +60,28 @@
       return noExt || s;
     }
 
-    function resolveLasoBgRelPath(key) {
+    function resolveLasoBgImageUrl(key) {
       const base = lasoBgSafeBasename(key);
       if (!base || !LASO_BG_FILES.includes(base)) return '';
-      return `${LASO_BG_DIR}/${base}`;
+      const enc = encodeURIComponent(base);
+      return `${LASO_BG_RAW_BASE}/${enc}`;
     }
 
     /**
-     * URL tuyệt đối theo trang hiện tại. Biến CSS `--laso-center-bg` được dùng trong `grid.css`;
-     * nếu để path tương đối, trình duyệt resolve `url()` theo file CSS → sai (`src/css/resources/...`).
+     * URL chuẩn cho `url()` trong biến CSS (dùng trong `grid.css`).
+     * Path tương đối resolve theo stylesheet → phải là URL tuyệt đối;
+     * URL https remote thêm query cache-bust.
      */
-    function lasoBgAbsoluteUrlForCss(relPath) {
+    function lasoBgAbsoluteUrlForCss(href) {
       try {
-        const u = new URL(relPath, window.location.href);
+        const u =
+          href.startsWith('https://') || href.startsWith('http://')
+            ? new URL(href)
+            : new URL(href, window.location.href);
         u.searchParams.set('v', String(Date.now()));
         return u.href;
       } catch (_) {
-        return `${relPath}?v=${Date.now()}`;
+        return `${href}?v=${Date.now()}`;
       }
     }
 
@@ -97,17 +111,25 @@
       const wrap = document.getElementById('lasoWrap');
       if (!wrap) return;
       const k = String(key ?? '').trim();
-      wrap.classList.remove('laso-center-wallpaper-on', 'laso-center-decor-yinyang');
+      wrap.classList.remove('laso-center-wallpaper-on', 'laso-center-decor-yinyang', 'laso-center-plain', 'laso-center-width-priority');
       wrap.style.removeProperty('--laso-center-bg');
-      if (!k) return;
-      if (k === LASO_BG_YINYANG) {
-        wrap.classList.add('laso-center-decor-yinyang');
+      if (!k) {
+        wrap.classList.add('laso-center-plain');
         return;
       }
-      const rel = resolveLasoBgRelPath(k);
-      if (!rel) return;
+      if (k === LASO_BG_YINYANG) {
+        wrap.classList.add('laso-center-decor-yinyang');
+        wrap.classList.add('laso-center-width-priority');
+        return;
+      }
+      const imgUrl = resolveLasoBgImageUrl(k);
+      if (!imgUrl) {
+        wrap.classList.add('laso-center-plain');
+        return;
+      }
       wrap.classList.add('laso-center-wallpaper-on');
-      const abs = lasoBgAbsoluteUrlForCss(rel);
+      if (LASO_BG_WIDTH_PRIORITY.has(k)) wrap.classList.add('laso-center-width-priority');
+      const abs = lasoBgAbsoluteUrlForCss(imgUrl);
       wrap.style.setProperty('--laso-center-bg', `url(${JSON.stringify(abs)})`);
     }
 
