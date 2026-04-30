@@ -12,6 +12,12 @@ function loadScript(filePath, exposeNames = []) {
 }
 
 loadScript(path.join(ROOT, "src/js/core/data.js"), ["TUVI_DATA"]);
+loadScript(path.join(ROOT, "src/js/utils/diachi.js"), ["TUVI_DIACHI_UTIL"]);
+loadScript(path.join(ROOT, "src/js/utils/thiencan.js"), ["TUVI_THIENCAN_UTIL"]);
+loadScript(path.join(ROOT, "src/js/utils/cungchuc.js"), ["TUVI_CUNGCHUC_UTIL"]);
+loadScript(path.join(ROOT, "src/js/core/ansao.js"), ["ANSAO_SHARED"]);
+loadScript(path.join(ROOT, "src/js/core/trungchauphai.js"), ["ANSAO_TRUNGCHAU"]);
+loadScript(path.join(ROOT, "src/js/core/thaithulang.js"), ["ANSAO_THAITHULANG"]);
 loadScript(path.join(ROOT, "src/js/core/logic.js"), ["TUVI_LOGIC"]);
 loadScript(path.join(ROOT, "src/js/features/lunar-calendar.js"), [
   "solar2Lunar",

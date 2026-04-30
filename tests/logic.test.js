@@ -21,6 +21,7 @@ module.exports = [
         nam: 1993,
         gioSinh: "04:00",
         gioiTinh: "nam",
+        method: "trungchau",
       });
       assert.ok(laso && laso.meta && Array.isArray(laso.cung));
       assert.equal(laso.cung.length, 12);
@@ -41,9 +42,29 @@ module.exports = [
             nam: 2000,
             gioSinh: "10:00",
             gioiTinh: "nam",
+            method: "trungchau",
           }),
         /Ngày âm lịch/
       );
+    },
+  },
+  {
+    name: "logic: thaithulang method computes with TTL tables",
+    fn: () => {
+      const input = {
+        hoTen: "Method Compare",
+        ngay: 8,
+        thang: 7,
+        nam: 2008,
+        gioSinh: "10:30",
+        gioiTinh: "nam",
+      };
+      const tc = TUVI_LOGIC.compute({ ...input, method: "trungchau" });
+      const ttl = TUVI_LOGIC.compute({ ...input, method: "thaithulang" });
+      assert.equal(ttl.meta.chiCungMenh, tc.meta.chiCungMenh);
+      assert.equal(ttl.meta.tenCuc, tc.meta.tenCuc);
+      assert.equal(ttl.cung.length, 12);
+      assert.notEqual(JSON.stringify(ttl.cung), JSON.stringify(tc.cung));
     },
   },
 ];

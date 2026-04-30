@@ -23,6 +23,8 @@
     };
 
     const LASO_BG_STORAGE_KEY = 'tuviLasoBgChoice';
+    const ANSAO_METHOD_STORAGE_KEY = 'tuviAnSaoMethod';
+    const ANSAO_METHODS = new Set(['trungchau', 'thaithulang']);
     /** Value trong `<select>` cho SVG Âm Dương (không phải tên file) */
     const LASO_BG_YINYANG = '__yinyang__';
     /**
@@ -153,19 +155,6 @@
         '--color-truong-sinh': '#000000',
         '--color-border': '#000000',
         '--mono-mode': '1',
-      },
-      dark: {
-        ...DEFAULT_CONFIG,
-        '--color-bg-cung': '#1a1a1a',
-        '--color-bg-page': '#111111',
-        '--color-chinh': '#ff6b6b',
-        '--color-cat': '#69db7c',
-        '--color-hung': '#ff8787',
-        '--color-chi': '#ffd43b',
-        '--color-ten-cung': '#ffd43b',
-        '--color-dai-van': '#ffffff',
-        '--color-truong-sinh': '#adb5bd',
-        '--color-border': '#495057',
       },
       pastel: {
         ...DEFAULT_CONFIG,
@@ -356,6 +345,7 @@
       syncConfigUI(DEFAULT_CONFIG);
       const templateSelect = document.getElementById('templateSelect');
       if (templateSelect) templateSelect.value = 'classic';
+      if (typeof window.setAnSaoMethod === 'function') window.setAnSaoMethod('thaithulang', false);
       setLysoTemplateLock(false);
       toggleLysoApiMode(false);
       document.querySelectorAll('#cfgPanel select:not([data-var])').forEach(el => el.selectedIndex = 0);
@@ -370,6 +360,25 @@
 
     window.applyLasoBackgroundChoice = applyLasoBackgroundChoice;
     window.onLasoBgSelectChange = onLasoBgSelectChange;
+
+    function normalizeAnSaoMethod(method) {
+      const m = String(method || '').trim().toLowerCase();
+      return ANSAO_METHODS.has(m) ? m : 'thaithulang';
+    }
+
+    window.getCurrentAnSaoMethod = function getCurrentAnSaoMethod() {
+      const sel = document.getElementById('anSaoMethodSelect');
+      return normalizeAnSaoMethod(sel?.value || window._ansaoMethod || 'thaithulang');
+    };
+
+    window.setAnSaoMethod = function setAnSaoMethod(method, triggerCompute = true) {
+      const m = normalizeAnSaoMethod(method);
+      window._ansaoMethod = m;
+      const sel = document.getElementById('anSaoMethodSelect');
+      if (sel && sel.value !== m) sel.value = m;
+      try { localStorage.setItem(ANSAO_METHOD_STORAGE_KEY, m); } catch (_) {}
+      if (triggerCompute && typeof lapLaSo === 'function') lapLaSo();
+    };
 
     window.isLysoTemplateActive = isLysoTemplateActive;
     window.renderLysoFromCurrentInputs = renderLysoFromCurrentInputs;
@@ -414,6 +423,14 @@
         else if (saved) try { localStorage.removeItem(LASO_BG_STORAGE_KEY); } catch (_) {}
       } catch (_) {}
       applyLasoBackgroundChoice(sel.value);
+    })();
+
+    (function initAnSaoMethodFromStorage() {
+      let saved = 'thaithulang';
+      try {
+        saved = normalizeAnSaoMethod(localStorage.getItem(ANSAO_METHOD_STORAGE_KEY));
+      } catch (_) {}
+      window.setAnSaoMethod(saved, false);
     })();
 
     // Gắn auto-convert khi nhập dương lịch

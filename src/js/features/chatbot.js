@@ -124,7 +124,7 @@ LỜI KHUYÊN NĂM [...]: ...
   - isThan: true nếu là cung Thân (cung Mệnh: cungChuc === 'Mệnh')
   - daiVan: tuổi bắt đầu đại hạn
   - truongSinh: Trường Sinh|Mộc Dục|Quan Đới|Lâm Quan|Đế Vượng|Suy|Bệnh|Tử|Mộ|Tuyệt|Thai|Dưỡng
-  - sao[]: mỗi sao: name, type(chinh|cat|hung|trung), sucManh(M=Miếu|V=Vượng|B=Bình|H=Hãm), nguHanh
+  - sao[]: mỗi sao: name, type(chinh|cat|hung|trung), sucManh(M=Miếu|V=Vượng|Đ=Đắc|B=Bình|H=Hãm), nguHanh
 
 Luận giải dùng tiếng Việt. Không bịa đặt thông tin ngoài lá số.`;
 

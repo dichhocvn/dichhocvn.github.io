@@ -11,6 +11,7 @@ module.exports = [
         nam: 1990,
         gioSinh: "13:00",
         gioiTinh: "nu",
+        method: "trungchau",
       });
       const all = getAllStars(laso).map((x) => x.star.name);
       const mustOne = ["Tử Vi", "Thiên Phủ", "Thất Sát", "Phá Quân"];
@@ -30,7 +31,7 @@ module.exports = [
         gioSinh: "06:00",
         gioiTinh: "nam",
       };
-      const laso = TUVI_LOGIC.compute(input);
+      const laso = TUVI_LOGIC.compute({ ...input, method: "trungchau" });
       const canNam = ((input.nam - 4) % 10 + 10) % 10;
       const trietChis = TUVI_DATA.TRIET[canNam];
       const chiIdx = TUVI_DATA.CHI;

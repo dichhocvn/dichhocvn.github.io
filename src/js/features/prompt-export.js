@@ -1,14 +1,14 @@
 // ── Xuất Prompt Lá Số ────────────────────────────────────
     let _promptCurrentTab = 'text';
 
-    const SM_LABEL = { M: 'Miếu', V: 'Vượng', B: 'Bình', H: 'Hãm', '': '' };
+    const SM_LABEL = { M: 'Miếu', V: 'Vượng', Đ: 'Đắc', B: 'Bình', H: 'Hãm', '': '' };
     const TYPE_LABEL = { chinh: 'chính tinh', cat: 'cát tinh', hung: 'hung tinh', trung: 'trung tính tinh' };
 
     // Dùng trong buildXemHan
     function chiCuaSaoInCung(tenSao, cungArr) {
       const CHI = ['Tý','Sửu','Dần','Mão','Thìn','Tị','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
       const c = cungArr.find(c => c.sao.some(s => s.name === tenSao));
-      return c ? CHI.indexOf(c.diaChi) : null;
+      return c ? TUVI_DIACHI_UTIL.nameToIdx(c.diaChi, CHI) : null;
     }
 
     function buildXemHan(j, tuoiFrom, tuoiTo) {
@@ -18,7 +18,7 @@
       const CHI = ['Tý','Sửu','Dần','Mão','Thìn','Tị','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
       const HOA_TEN = ['Hóa Lộc','Hóa Quyền','Hóa Khoa','Hóa Kỵ'];
 
-      const ci = str => CHI.indexOf(str);
+      const ci = str => TUVI_DIACHI_UTIL.nameToIdx(str, CHI);
       const chiGio = ci(m.tenChiGio);
       const namSinh = m.namAL;
       const lines = [];
@@ -81,7 +81,7 @@
       const namXemEl = document.getElementById('namXem');
       const namXemUI = namXemEl ? (parseInt(namXemEl.dataset.val) || new Date().getFullYear()) : new Date().getFullYear();
 
-      const ci = str => CHI.indexOf(str);
+      const ci = str => TUVI_DIACHI_UTIL.nameToIdx(str, CHI);
       // Tìm đại vận của một tuổi: dùng lại logic tinhCungDVHienTai
       function getDVInfo(tuoi) {
         const soCucVal = { 'Thủy Nhị Cục':2,'Mộc Tam Cục':3,'Kim Tứ Cục':4,'Thổ Ngũ Cục':5,'Hỏa Lục Cục':6 }[m.tenCuc] ?? 0;
@@ -94,7 +94,7 @@
             const chiDV = m.thuanChieu
               ? (chiMenh + stt) % 12
               : (chiMenh - stt + 120) % 12;
-            const canDV = TUVI_DATA.BANG_THIENCAN_CUNGMENH[CAN.indexOf(m.canNam)][chiDV];
+            const canDV = TUVI_DATA.BANG_THIENCAN_CUNGMENH[TUVI_THIENCAN_UTIL.nameToIdx(m.canNam, CAN)][chiDV];
             return { stt, start, end: start + 9, chiDV, canDV, diaChi: CHI[chiDV] };
           }
           stt++;
@@ -140,7 +140,7 @@
         for (let k = 0; k < 12; k++) {
           const chiCungK = (chiDVMenh + k) % 12;
           const diaChiK = CHI[chiCungK];
-          const canK = TUVI_DATA.BANG_THIENCAN_CUNGMENH[CAN.indexOf(m.canNam)][chiCungK];
+          const canK = TUVI_DATA.BANG_THIENCAN_CUNGMENH[TUVI_THIENCAN_UTIL.nameToIdx(m.canNam, CAN)][chiCungK];
           const tenCanK = CAN[canK];
           // Cung bản mệnh có địa chi này
           const cungBMK = cung.find(c => ci(c.diaChi) === chiCungK);

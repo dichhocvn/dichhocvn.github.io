@@ -36,7 +36,7 @@ const TUVI_RENDER = (() => {
       }
 
       // sucManh hiển thị dạng "(M)" inline, màu sẽ do parent div quyết định
-      const SM_LABEL = { 'M': '(M)', 'V': '(V)', 'B': '(B)', 'H': '(H)' };
+      const SM_LABEL = { 'M': '(M)', 'V': '(V)', 'Đ': '(Đ)', 'B': '(B)', 'H': '(H)' };
       function smTag(star) {
         return star.sucManh && SM_LABEL[star.sucManh]
           ? `<span class="sm-inline">${SM_LABEL[star.sucManh]}</span>` : '';
@@ -313,6 +313,22 @@ const TUVI_RENDER = (() => {
           for (let i = 0; i < 12; i++) thangMap[(chiThang + i) % 12] = `T${i + 1}`;
         }
 
+        const currentMethod = (typeof getCurrentAnSaoMethod === 'function') ? getCurrentAnSaoMethod() : 'trungchau';
+        const ttlLuuTheoChi = (typeof ANSAO_THAITHULANG !== 'undefined'
+          && ANSAO_THAITHULANG.TABLES
+          && ANSAO_THAITHULANG.TABLES.LUU_SAO_THEO_CHI)
+          ? ANSAO_THAITHULANG.TABLES.LUU_SAO_THEO_CHI
+          : {};
+        const lSaoTheoChiMethod = currentMethod === 'thaithulang'
+          ? {
+            ...L_SAO_THEO_CHI,
+            // TTL: bổ sung sao lưu theo đúng quy tắc hiện dùng của Vương Đình Chi
+            'L.Thái Tuế': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            'L.Đào Hoa': [9, 6, 3, 0, 9, 6, 3, 0, 9, 6, 3, 0],
+            ...ttlLuuTheoChi,
+          }
+          : L_SAO_THEO_CHI;
+
         const dvSaoMap = {}; // chiIndex → [tên sao lưu]
         if (chiDVMenh !== null) {
           // Theo địa chi
@@ -336,7 +352,7 @@ const TUVI_RENDER = (() => {
             dvSaoMap[chiSao].push(tenSao);
           });
           // An sao N. theo địa chi năm xem hạn
-          Object.entries(L_SAO_THEO_CHI).forEach(([tenSao, arr]) => {
+          Object.entries(lSaoTheoChiMethod).forEach(([tenSao, arr]) => {
             const chiSao = arr[chiNamXem];
             if (!dvSaoMap[chiSao]) dvSaoMap[chiSao] = [];
             dvSaoMap[chiSao].push(tenSao);

@@ -9,7 +9,7 @@ function normalizeStarName(name) {
     .replace(/^(ĐV\.|L\.)\s*/i, "")
     .replace(/\([^)]*\)/g, " ")
     .replace(/\b(miếu|vượng|đắc|hãm|mieu|vuong|dac|ham)\b/gi, " ")
-    .replace(/(?:^|\s)[mvbh](?=\s|$)/gi, " ")
+    .replace(/(?:^|\s)[mvđbh](?=\s|$)/giu, " ")
     .toLowerCase()
     .replace(/\s+/g, " ")
     .trim();
@@ -24,6 +24,7 @@ function countForCase({ dd, mm, yy, gioSinh }) {
     nam: lunar.nam,
     gioSinh,
     gioiTinh: "nam",
+    method: "trungchau",
   });
   const menh = laso.cung.find((c) => c.cungChuc === "Mệnh");
   const menhChi = CHI.indexOf(menh.diaChi);

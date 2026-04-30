@@ -54,7 +54,8 @@
       // Tính toán — logic.js
       let lasoJson;
       try {
-        lasoJson = TUVI_LOGIC.compute({ hoTen, ngay, thang, nam, gioSinh, gioiTinh });
+        const method = (typeof getCurrentAnSaoMethod === 'function') ? getCurrentAnSaoMethod() : 'trungchau';
+        lasoJson = TUVI_LOGIC.compute({ hoTen, ngay, thang, nam, gioSinh, gioiTinh, method });
       } catch (e) {
         errEl.textContent = '⚠ ' + e.message;
         errEl.style.display = 'block';

@@ -162,13 +162,21 @@
             style="display:none;background:#fff;border:1px solid #c8b88a;border-radius:6px;padding:14px;margin-bottom:12px;">
             <div class="cfg-panel-grid">
 
+              <!-- Phương pháp an sao -->
+              <div class="fg">
+                <label>Phương pháp an sao</label>
+                <select id="anSaoMethodSelect" data-lyso-keep="1" onchange="setAnSaoMethod(this.value, true)">
+                  <option value="thaithulang">Thái Thứ Lang</option>
+                  <option value="trungchau">Trung châu phái Vương Đình Chi</option>
+                </select>
+              </div>
+
               <!-- Template màu -->
               <div class="fg">
                 <label>Template màu</label>
                 <select id="templateSelect" data-lyso-keep="1" onchange="applyTemplate(this.value)">
                   <option value="classic">Cổ điển (hiện tại)</option>
                   <option value="mono">Đơn sắc (không màu)</option>
-                  <option value="dark">Tối</option>
                   <option value="pastel">Nhạt</option>
                   <option value="lyso">lyso.vn (API ảnh)</option>
                 </select>
@@ -520,7 +528,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <!-- Inline scripts -->
+  <script src="src/js/utils/diachi.js"></script>
+  <script src="src/js/utils/thiencan.js"></script>
+  <script src="src/js/utils/cungchuc.js"></script>
   <script src="src/js/core/data.js"></script>
+  <script src="src/js/core/ansao.js"></script>
+  <script src="src/js/core/trungchauphai.js"></script>
+  <script src="src/js/core/thaithulang.js"></script>
   <script src="src/js/core/logic.js"></script>
   <script src="src/js/rules/rules-data.js"></script>
   <script src="src/js/render/tuvi-render-modules.js"></script>

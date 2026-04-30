@@ -199,7 +199,7 @@
       .replace(/^(ĐV\.|L\.)\s*/i, '')
       .replace(/\([^)]*\)/g, ' ')
       .replace(/\b(miếu|vượng|đắc|hãm|mieu|vuong|dac|ham)\b/gi, ' ')
-      .replace(/(?:^|\s)[mvbh](?=\s|$)/gi, ' ')
+      .replace(/(?:^|\s)[mvđbh](?=\s|$)/giu, ' ')
       .toLowerCase()
       .replace(/\s+/g, ' ')
       .trim();
@@ -439,6 +439,7 @@
           if (_searchCancelled) break outer;
           let laso;
           try {
+            const method = (typeof getCurrentAnSaoMethod === 'function') ? getCurrentAnSaoMethod() : 'trungchau';
             laso = TUVI_LOGIC.compute({
               hoTen: `Search ${dd}/${mm}/${yy} ${gio}`,
               ngay: lunar.ngay,
@@ -446,6 +447,7 @@
               nam: lunar.nam,
               gioSinh: gio,
               gioiTinh: cfg.gt,
+              method,
             });
           } catch (_) {
             updateProgress(checked, total, hits.length);
