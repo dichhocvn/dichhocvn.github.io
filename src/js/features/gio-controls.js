@@ -112,4 +112,11 @@
       onNamXemChange();
     }
 
+    (function bindGioArrowButtons() {
+      const prev = document.getElementById('btnGioXemPrev');
+      const next = document.getElementById('btnGioXemNext');
+      if (prev) prev.addEventListener('click', () => changeGioXem(-1));
+      if (next) next.addEventListener('click', () => changeGioXem(1));
+    })();
+
     initDateTimeDefaultsNow();

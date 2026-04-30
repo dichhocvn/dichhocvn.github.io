@@ -13,3 +13,10 @@
       if (chk && newVal > 0) chk.checked = true;
       onNamXemChange();
     }
+
+    (function bindNamArrowButtons() {
+      const prev = document.getElementById('btnNamXemPrev');
+      const next = document.getElementById('btnNamXemNext');
+      if (prev) prev.addEventListener('click', () => changeNamXem(-1));
+      if (next) next.addEventListener('click', () => changeNamXem(1));
+    })();

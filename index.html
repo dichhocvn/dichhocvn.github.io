@@ -325,10 +325,11 @@
             <img id="lysoApiImage" alt="Lá số lyso.vn" style="max-width:100%;height:auto;border:1px solid #c8b88a;border-radius:6px;background:#fff;">
           </div>
           <div id="searchResultNav" class="search-result-nav">
-            <button class="btn nav-btn nav-btn-prev" onclick="openPrevSearchResult()"><span class="nav-icon">◀</span><span class="nav-label"> Lá số trước</span></button>
+            <button id="btnLasoPrev" class="btn nav-btn nav-btn-prev"><span class="nav-icon">◀</span><span class="nav-label"> Lá số trước</span></button>
             <div id="searchResultPos" class="search-result-pos">0/0</div>
-            <button class="btn nav-btn nav-btn-next" onclick="openNextSearchResult()"><span class="nav-label">Lá số kế tiếp </span><span class="nav-icon">▶</span></button>
-            <button class="btn nav-btn nav-btn-list" onclick="openSearchResultDialog()" title="Danh sách lá số">☰</button>
+            <button id="btnLasoNext" class="btn nav-btn nav-btn-next"><span class="nav-label">Lá số kế tiếp </span><span class="nav-icon">▶</span></button>
+            <button id="listLaso" class="btn nav-btn" onclick="openSearchResultDialog()" title="Danh sách lá số">☰</button>
+            <button id="listLasoStar" class="btn nav-btn" onclick="openStarredSearchResultDialog()" title="Lá số đã đánh dấu">★</button>
           </div>
           <!-- Năm xem hạn & Giờ xem hạn -->
           <div id="hanNavBar" class="han-nav-bar">
@@ -339,20 +340,16 @@
             </label>
             <span class="han-nav-divider">|</span>
             <div id="namNavControls" class="han-nav-controls">
-              <button id="btnNamXemPrev" onclick="changeNamXem(-1)"
-                class="han-nav-arrow-btn">‹</button>
+              <button id="btnNamXemPrev" class="han-nav-arrow-btn">‹</button>
               <span id="namXem" data-val="0" class="han-nav-nam">---</span>
-              <button id="btnNamXemNext" onclick="changeNamXem(1)"
-                class="han-nav-arrow-btn">›</button>
+              <button id="btnNamXemNext" class="han-nav-arrow-btn">›</button>
             </div>
             <span class="han-nav-divider">|</span>
             <!-- Giờ xem -->
             <div id="gioNavControls" class="han-nav-controls han-nav-controls-gio">
-              <button id="btnGioXemPrev" onclick="changeGioXem(-1)"
-                class="han-nav-arrow-btn">‹</button>
+              <button id="btnGioXemPrev" class="han-nav-arrow-btn">‹</button>
               <span id="gioXem" data-val="" class="han-nav-gio">—</span>
-              <button id="btnGioXemNext" onclick="changeGioXem(1)"
-                class="han-nav-arrow-btn">›</button>
+              <button id="btnGioXemNext" class="han-nav-arrow-btn">›</button>
             </div>
           </div>
 
@@ -496,6 +493,16 @@
         <button class="rule-modal-close" onclick="closeSearchValidationDialog()">✕</button>
       </div>
       <div class="rule-modal-body" id="searchValidationBody"></div>
+    </div>
+  </div>
+
+  <div class="rule-overlay" id="searchSummaryOverlay" onclick="closeSearchSummaryDialog(event)">
+    <div class="rule-modal" style="width:min(560px,94vw);">
+      <div class="rule-modal-header">
+        <div class="rule-modal-title">Kết quả tìm kiếm</div>
+        <button class="rule-modal-close" onclick="closeSearchSummaryDialog()">✕</button>
+      </div>
+      <div class="rule-modal-body" id="searchSummaryBody" style="white-space:pre-wrap;"></div>
     </div>
   </div>
 

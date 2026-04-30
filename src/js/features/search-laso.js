@@ -10,6 +10,9 @@
   let _searchCancelled = false;
   let _searchRunning = false;
   let _currentResultIdx = -1;
+  const _starredResultKeys = new Set();
+  let _overlayListMode = 'all';
+  let _needsMainListRefresh = false;
 
   function dmy(d) {
     const y = d.getFullYear();
@@ -108,6 +111,19 @@
       .map(m => `<div style="margin-bottom:6px;">${m}</div>`)
       .join('');
     overlay.classList.add('open');
+  }
+  function showSearchSummaryDialog(message) {
+    const overlay = document.getElementById('searchSummaryOverlay');
+    const body = document.getElementById('searchSummaryBody');
+    if (!overlay || !body || !message) return;
+    body.textContent = message;
+    overlay.classList.add('open');
+  }
+  function closeSearchSummaryDialog(e) {
+    const overlay = document.getElementById('searchSummaryOverlay');
+    if (!overlay) return;
+    if (e && e.target !== overlay) return;
+    overlay.classList.remove('open');
   }
   function closeSearchValidationDialog(e) {
     const overlay = document.getElementById('searchValidationOverlay');
@@ -227,6 +243,21 @@
     const current = _currentResultIdx >= 0 ? _currentResultIdx + 1 : 0;
     if (pos) pos.textContent = `${current}/${total}`;
   }
+  function resultStarKey(row) {
+    if (!row || !row.solar) return '';
+    return [row.solar.dd, row.solar.mm, row.solar.yy, row.gio || '', row.gender || ''].join('|');
+  }
+  function isResultStarred(row) {
+    const key = resultStarKey(row);
+    return !!key && _starredResultKeys.has(key);
+  }
+  function setResultStarred(row, on) {
+    const key = resultStarKey(row);
+    if (!key) return false;
+    if (on) _starredResultKeys.add(key);
+    else _starredResultKeys.delete(key);
+    return true;
+  }
   function clearSearchResultsState() {
     window._searchResults = [];
     _currentResultIdx = -1;
@@ -237,6 +268,7 @@
     setStatus('');
     updateResultNavPosition();
     closeSearchResultDialogDirect();
+    _starredResultKeys.clear();
   }
 
   function exactMainMatch(menh, selectedExpr) {
@@ -285,7 +317,8 @@
     }
   }
 
-  function renderResults(results) {
+  function renderResults(results, resolveIdx) {
+    const toSourceIndex = typeof resolveIdx === 'function' ? resolveIdx : (idx => idx);
     const list = document.getElementById('searchResultList');
     const nav = document.getElementById('searchResultNav');
     if (!list) return;
@@ -296,10 +329,14 @@
       list.innerHTML = `<div style="padding:10px;border:1px dashed #c8b88a;border-radius:6px;color:#7a5c2a;">Không có lá số nào thỏa điều kiện.</div>`;
       return;
     }
-    list.innerHTML = results.map((r, idx) => `
-      <div onclick="openSearchResult(${idx})" style="border:1px solid ${idx === _currentResultIdx ? '#8b5e1a' : '#d8c9a8'};border-radius:8px;padding:10px;background:${idx === _currentResultIdx ? '#fff3da' : '#fff'};cursor:pointer;">
+    list.innerHTML = results.map((r, idx) => {
+      const sourceIdx = toSourceIndex(idx);
+      const isActive = sourceIdx === _currentResultIdx;
+      const starred = isResultStarred(r);
+      return `
+      <div onclick="openSearchResult(${sourceIdx})" style="border:1px solid ${isActive ? '#8b5e1a' : '#d8c9a8'};border-radius:8px;padding:10px;background:${isActive ? '#fff3da' : '#fff'};cursor:pointer;">
         <div style="display:flex;gap:10px;align-items:stretch;">
-          <div style="flex:0 0 80%;min-width:0;">
+          <div style="flex:0 0 72%;min-width:0;">
             <div style="font-weight:bold;color:#4a2e08;">#${idx + 1} • ${ddmmyyyy(r.solar)} DL • ${gioRangeLabel(r.gio)}</div>
             <div style="font-size:12px;color:#5c3d10;margin-top:4px;">ÂL: ${String(r.lunar.ngay).padStart(2, '0')}/${String(r.lunar.thang).padStart(2, '0')}/${r.lunar.nam} • Mệnh: ${r.menhMainWithStrength}</div>
             <div style="font-size:12px;color:#5c3d10;margin-top:5px;">
@@ -308,15 +345,20 @@
             ${(r.hasTuanAtMenh || r.hasTrietAtMenh) ? `<div style="display:flex;gap:6px;margin-top:5px;">${r.hasTuanAtMenh ? '<span style="background:#111;color:#fff;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;">Tuần</span>' : ''}${r.hasTrietAtMenh ? '<span style="background:#111;color:#fff;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;">Triệt</span>' : ''}</div>` : ''}
             ${r.hasCoQuaToaOrChieu ? '<div style="font-size:12px;color:#b00020;font-weight:700;margin-top:4px;">Cô quả chiếu mệnh</div>' : ''}
           </div>
-          <div style="flex:0 0 20%;display:flex;align-items:center;justify-content:center;border-left:1px dashed #d8c9a8;">
+          <div style="flex:0 0 18%;display:flex;align-items:center;justify-content:center;border-left:1px dashed #d8c9a8;">
             <div style="text-align:center;line-height:1.25;">
               <div style="font-size:11px;color:#7a5c2a;">Cát khí</div>
               <div style="font-weight:700;font-size:18px;color:${r.catKhiScore >= 70 ? '#1a5c00' : (r.catKhiScore <= 35 ? '#7a2000' : '#8b5e1a')};">${r.catKhiScore}</div>
             </div>
           </div>
+          <div style="flex:0 0 10%;display:flex;align-items:center;justify-content:flex-end;">
+            <button type="button" title="Đánh dấu lưu" onclick="toggleSearchResultStar(event, ${sourceIdx})"
+              style="border:none;background:transparent;cursor:pointer;font-size:22px;line-height:1;color:${starred ? '#f4c430' : '#fff'};text-shadow:0 0 0.8px #8b5e1a, 0 0 1.2px #8b5e1a;padding:0 2px;">★</button>
+          </div>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
     if (nav) nav.style.display = results.length > 0 ? 'flex' : 'none';
     updateResultNavPosition();
     syncSearchResultPlacement();
@@ -454,9 +496,16 @@
       renderResults(hits);
       _currentResultIdx = hits.length ? 0 : -1;
       if (_currentResultIdx >= 0) window.openSearchResult(_currentResultIdx);
-      setStatus(_searchCancelled
+      const summary = (_searchCancelled
         ? `Đã ngắt tìm kiếm: quét ${checked}/${total} lá số, có ${hits.length} lá số thỏa.`
         : `Đã quét ${checked}/${total} lá số, tìm thấy ${hits.length} lá số thỏa điều kiện.`);
+      const isMobile = document.body?.dataset.layout === 'mobile';
+      if (isMobile) {
+        setStatus('');
+        showSearchSummaryDialog(summary);
+      } else {
+        setStatus(summary);
+      }
     } finally {
       showProgress(false);
       _searchRunning = false;
@@ -465,9 +514,12 @@
   };
 
   window.openSearchResult = function openSearchResult(idx) {
-    const row = window._searchResults[idx];
+    const idxNum = Number.parseInt(String(idx), 10);
+    if (!Number.isFinite(idxNum)) return;
+    const row = window._searchResults[idxNum];
     if (!row) return;
-    _currentResultIdx = idx;
+    _currentResultIdx = idxNum;
+    updateResultNavPosition();
     document.getElementById('hoTen').value = row.laso.meta.hoTen || '';
     document.getElementById('ngay').value = row.lunar.ngay;
     document.getElementById('thang').value = row.lunar.thang;
@@ -490,6 +542,44 @@
       lapLaSo();
     }
     if (document.body?.dataset.layout === 'mobile') closeSearchResultDialogDirect();
+    renderResults(window._searchResults);
+  };
+  function renderOverlayList(items, emptyMessage) {
+    const body = document.getElementById('searchResultOverlayBody');
+    if (!body) return;
+    if (!items.length) {
+      body.innerHTML = `<div style="padding:10px;border:1px dashed #c8b88a;border-radius:6px;color:#7a5c2a;">${emptyMessage}</div>`;
+      return;
+    }
+    body.innerHTML = items.map(({ row, fullIdx }, idx) => `
+      <div onclick="openOverlaySearchResultItem(${fullIdx})" style="border:1px solid #d8c9a8;border-radius:8px;padding:10px;background:#fff;cursor:pointer;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div style="min-width:0;">
+            <div style="font-weight:bold;color:#4a2e08;">#${idx + 1} • ${ddmmyyyy(row.solar)} DL • ${gioRangeLabel(row.gio)}</div>
+            <div style="font-size:12px;color:#5c3d10;margin-top:4px;">ÂL: ${String(row.lunar.ngay).padStart(2, '0')}/${String(row.lunar.thang).padStart(2, '0')}/${row.lunar.nam} • Mệnh: ${row.menhMainWithStrength}</div>
+          </div>
+          <button type="button" title="Đánh dấu lưu" onclick="toggleOverlayResultStar(event, ${fullIdx})"
+            style="border:none;background:transparent;cursor:pointer;font-size:20px;line-height:1;color:${isResultStarred(row) ? '#f4c430' : '#ddd'};padding:0 2px;">★</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  function renderAllOverlayList() {
+    const items = window._searchResults.map((row, fullIdx) => ({ row, fullIdx }));
+    renderOverlayList(items, 'Chưa có lá số nào để hiển thị.');
+  }
+  function renderStarredOverlayList() {
+    const items = [];
+    window._searchResults.forEach((row, fullIdx) => {
+      if (isResultStarred(row)) items.push({ row, fullIdx });
+    });
+    renderOverlayList(items, 'Chưa có lá số nào được đánh dấu sao.');
+  }
+  window.toggleSearchResultStar = function toggleSearchResultStar(e, idx) {
+    if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+    const row = window._searchResults[idx];
+    if (!row) return;
+    setResultStarred(row, !isResultStarred(row));
     renderResults(window._searchResults);
   };
   window.openPrevSearchResult = function openPrevSearchResult() {
@@ -531,6 +621,10 @@
     }
     syncSearchResultPlacement();
     window.addEventListener('resize', syncSearchResultPlacement);
+    const btnPrev = document.getElementById('btnLasoPrev');
+    const btnNext = document.getElementById('btnLasoNext');
+    if (btnPrev) btnPrev.addEventListener('click', () => window.openPrevSearchResult());
+    if (btnNext) btnNext.addEventListener('click', () => window.openNextSearchResult());
     ['hoTen', 'ngay', 'thang', 'nam', 'ngayDL', 'thangDL', 'namDL', 'gio', 'gt'].forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -542,7 +636,7 @@
       el.addEventListener('input', handler);
       el.addEventListener('change', handler);
     });
-    setStatus('Nhập điều kiện và bấm "Tìm lá số".');
+    // setStatus('Nhập điều kiện và bấm "Tìm lá số".');
   };
   window.syncSearchResultPlacement = syncSearchResultPlacement;
   window.toggleMainChip = toggleMainChip;
@@ -551,21 +645,52 @@
   window.openSearchResultDialog = function openSearchResultDialog() {
     const ov = document.getElementById('searchResultOverlay');
     if (!ov) return;
-    syncSearchResultPlacement();
+    _overlayListMode = 'all';
+    renderAllOverlayList();
     ov.classList.add('open');
+  };
+  window.openStarredSearchResultDialog = function openStarredSearchResultDialog() {
+    const ov = document.getElementById('searchResultOverlay');
+    if (!ov) return;
+    _overlayListMode = 'star';
+    renderStarredOverlayList();
+    ov.classList.add('open');
+  };
+  window.toggleOverlayResultStar = function toggleOverlayResultStar(e, fullIdx) {
+    if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+    const row = window._searchResults[fullIdx];
+    if (!row) return;
+    setResultStarred(row, !isResultStarred(row));
+    if (_overlayListMode === 'star') renderStarredOverlayList();
+    else renderAllOverlayList();
+    _needsMainListRefresh = true;
+  };
+  window.openOverlaySearchResultItem = function openOverlaySearchResultItem(fullIdx) {
+    window.openSearchResult(fullIdx);
+    _needsMainListRefresh = false;
+    window.closeSearchResultDialogDirect();
   };
   window.closeSearchResultDialog = function closeSearchResultDialog(e) {
     const ov = document.getElementById('searchResultOverlay');
     if (!ov) return;
     if (e && e.target !== ov) return;
     ov.classList.remove('open');
+    if (_needsMainListRefresh) {
+      _needsMainListRefresh = false;
+      renderResults(window._searchResults);
+    }
   };
   window.closeSearchResultDialogDirect = function closeSearchResultDialogDirect() {
     const ov = document.getElementById('searchResultOverlay');
     if (!ov) return;
     ov.classList.remove('open');
+    if (_needsMainListRefresh) {
+      _needsMainListRefresh = false;
+      renderResults(window._searchResults);
+    }
   };
   window.closeSearchValidationDialog = closeSearchValidationDialog;
+  window.closeSearchSummaryDialog = closeSearchSummaryDialog;
   window.clearSearchResultsState = clearSearchResultsState;
   window._compareSearchResultRank = compareSearchResultRank;
 })();

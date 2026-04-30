@@ -91,8 +91,12 @@
       max-width: 160px;
     }
 
-    .nav-btn-list {
+    #listLaso {
       max-width: 140px;
+    }
+    #listLasoStar {
+      max-width: 140px;
+      color: #f4c430;
     }
 
     @media (max-width: 768px) {
@@ -109,7 +113,6 @@
       body[data-layout="mobile"] #searchResultPos {
         min-width: 52px !important;
       }
-
       body[data-layout="mobile"] #gridScalerOuter {
         margin-bottom: 2px;
       }
