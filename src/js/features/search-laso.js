@@ -553,13 +553,26 @@
     }
     body.innerHTML = items.map(({ row, fullIdx }, idx) => `
       <div onclick="openOverlaySearchResultItem(${fullIdx})" style="border:1px solid #d8c9a8;border-radius:8px;padding:10px;background:#fff;cursor:pointer;margin-bottom:8px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-          <div style="min-width:0;">
+        <div style="display:flex;gap:10px;align-items:stretch;">
+          <div style="flex:0 0 72%;min-width:0;">
             <div style="font-weight:bold;color:#4a2e08;">#${idx + 1} • ${ddmmyyyy(row.solar)} DL • ${gioRangeLabel(row.gio)}</div>
             <div style="font-size:12px;color:#5c3d10;margin-top:4px;">ÂL: ${String(row.lunar.ngay).padStart(2, '0')}/${String(row.lunar.thang).padStart(2, '0')}/${row.lunar.nam} • Mệnh: ${row.menhMainWithStrength}</div>
+            <div style="font-size:12px;color:#5c3d10;margin-top:5px;">
+              Cát tinh: <b>${row.catCountTarget}</b> • Hung tinh: <b>${row.hungCountTarget}</b>
+            </div>
+            ${(row.hasTuanAtMenh || row.hasTrietAtMenh) ? `<div style="display:flex;gap:6px;margin-top:5px;">${row.hasTuanAtMenh ? '<span style="background:#111;color:#fff;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;">Tuần</span>' : ''}${row.hasTrietAtMenh ? '<span style="background:#111;color:#fff;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;">Triệt</span>' : ''}</div>` : ''}
+            ${row.hasCoQuaToaOrChieu ? '<div style="font-size:12px;color:#b00020;font-weight:700;margin-top:4px;">Cô quả chiếu mệnh</div>' : ''}
           </div>
-          <button type="button" title="Đánh dấu lưu" onclick="toggleOverlayResultStar(event, ${fullIdx})"
-            style="border:none;background:transparent;cursor:pointer;font-size:20px;line-height:1;color:${isResultStarred(row) ? '#f4c430' : '#ddd'};padding:0 2px;">★</button>
+          <div style="flex:0 0 18%;display:flex;align-items:center;justify-content:center;border-left:1px dashed #d8c9a8;">
+            <div style="text-align:center;line-height:1.25;">
+              <div style="font-size:11px;color:#7a5c2a;">Cát khí</div>
+              <div style="font-weight:700;font-size:18px;color:${row.catKhiScore >= 70 ? '#1a5c00' : (row.catKhiScore <= 35 ? '#7a2000' : '#8b5e1a')};">${row.catKhiScore}</div>
+            </div>
+          </div>
+          <div style="flex:0 0 10%;display:flex;align-items:center;justify-content:flex-end;">
+            <button type="button" title="Đánh dấu lưu" onclick="toggleOverlayResultStar(event, ${fullIdx})"
+              style="border:none;background:transparent;cursor:pointer;font-size:22px;line-height:1;color:${isResultStarred(row) ? '#f4c430' : '#fff'};text-shadow:0 0 0.8px #8b5e1a, 0 0 1.2px #8b5e1a;padding:0 2px;">★</button>
+          </div>
         </div>
       </div>
     `).join('');
