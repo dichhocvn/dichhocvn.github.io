@@ -80,8 +80,8 @@
             <div class="fg dl-field" style="display:none"><label>Năm DL</label>
               <input id="namDL" type="number" value="1993">
             </div>
-            <!-- Kết quả quy đổi -->
-            <div class="fg dl-field" style="display:none;grid-column:1/-1">
+            <!-- Kết quả quy đổi (desktop; ẩn trên mobile — không chiếm chỗ) -->
+            <div class="fg dl-field dl-convert-line" style="display:none;grid-column:1/-1">
               <div id="dlResult" style="font-size:11px;color:#5c3d10;padding:4px 0;min-height:18px;"></div>
             </div>
 
@@ -94,8 +94,8 @@
                 <option value="nu">Nữ</option>
               </select>
             </div>
-            <div class="fg">
-              <button class="btn" onclick="lapLaSo()">Lập lá số</button>
+            <div class="fg fg-lap-laso">
+              <button type="button" class="btn" onclick="lapLaSo()">Lập lá số</button>
             </div>
           </div>
           <div class="err" id="err"></div>
@@ -103,39 +103,42 @@
           <!-- Panel tìm kiếm lá số -->
           <div id="searchPanel"
             style="display:none;background:#fff;border:1px solid #c8b88a;border-radius:6px;padding:14px;margin-bottom:12px;">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end;">
-              <div class="fg">
-                <label>Từ ngày DL</label>
-                <input id="searchFromDate" type="text" placeholder="dd/mm/yyyy">
+            <div class="search-panel-form">
+              <div class="search-block search-block-start">
+                <div class="search-block-heading">Từ ngày DL</div>
+                <div class="search-dmy-grid">
+                  <div class="fg fg-search-inline"><label>Ngày</label>
+                    <input id="searchFromDD" type="number" min="1" max="31" placeholder="DD"></div>
+                  <div class="fg fg-search-inline"><label>Tháng</label>
+                    <input id="searchFromMM" type="number" min="1" max="12" placeholder="MM"></div>
+                  <div class="fg fg-search-inline fg-search-year"><label>Năm</label>
+                    <input id="searchFromYY" type="number" min="1" max="9999" placeholder="YYYY"></div>
+                </div>
               </div>
-              <div class="fg">
-                <label>Đến ngày DL</label>
-                <input id="searchToDate" type="text" placeholder="dd/mm/yyyy">
-              </div>
-              <div class="fg">
-                <label>Giới tính</label>
-                <select id="searchGt">
-                  <option value="nam">Nam</option>
-                  <option value="nu">Nữ</option>
-                </select>
+              <div class="search-block search-block-span-gt">
+                <div class="fg fg-search-inline fg-search-span"><label>Số ngày</label>
+                  <input id="searchSpanDays" type="number" min="1" max="3660" value="4" title="Số ngày dương lịch tính từ ngày bắt đầu (1 = một ngày)"></div>
+                <div class="fg fg-search-inline fg-search-gt"><label>Giới tính</label>
+                  <select id="searchGt">
+                    <option value="nam">Nam</option>
+                    <option value="nu">Nữ</option>
+                  </select></div>
               </div>
 
-              <div class="fg" style="grid-column:1/-1">
+              <div class="fg search-chinh-wrap">
                 <label>Chính tinh cung Mệnh (khớp chính xác, có thể chọn nhiều)</label>
-                <div style="display:flex;gap:6px;margin-bottom:6px;">
-                  <button type="button" class="btn" style="max-width:140px;padding:5px 8px;font-size:12px;" onclick="selectAllMainChips()">Chọn tất cả</button>
-                  <button type="button" class="btn" style="max-width:140px;padding:5px 8px;font-size:12px;background:#9b875b;border-color:#9b875b;" onclick="clearMainChips()">Bỏ chọn tất cả</button>
+                <div class="search-chip-actions">
+                  <button type="button" class="btn btn-chip-action" onclick="selectAllMainChips()">Chọn tất cả</button>
+                  <button type="button" class="btn btn-chip-action btn-chip-clear" onclick="clearMainChips()">Bỏ chọn tất cả</button>
                 </div>
                 <div id="searchChinhTinhList"
-                  style="display:flex;flex-wrap:wrap;gap:6px;border:1px solid #c8b88a;border-radius:4px;background:#fdfaf4;padding:8px;"></div>
-                <div style="font-size:11px;color:#7a5c2a;margin-top:4px;">Bấm vào tổ hợp để bật/tắt.</div>
+                  class="search-chinh-tinh-list"></div>
+                <div class="search-hint">Bấm vào tổ hợp để bật/tắt.</div>
               </div>
-              <div class="fg" style="grid-column:1/-1">
-                <div style="font-size:11px;color:#7a5c2a;">Giờ sinh: hệ thống tự quét toàn bộ 12 giờ.</div>
-              </div>
+              <div class="search-gio-hint">Giờ sinh: hệ thống tự quét toàn bộ 12 giờ.</div>
 
-              <div class="fg">
-                <button class="btn" onclick="searchLaSo()">Tìm lá số</button>
+              <div class="fg fg-search-submit-wrap">
+                <button type="button" class="btn btn-search-submit" onclick="searchLaSo()">Tìm lá số</button>
               </div>
             </div>
 
@@ -148,7 +151,7 @@
           <!-- Panel cấu hình -->
           <div id="cfgPanel"
             style="display:none;background:#fff;border:1px solid #c8b88a;border-radius:6px;padding:14px;margin-bottom:12px;">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+            <div class="cfg-panel-grid">
 
               <!-- Template màu -->
               <div class="fg">
@@ -160,6 +163,12 @@
                   <option value="pastel">Nhạt</option>
                   <option value="lyso">lyso.vn (API ảnh)</option>
                 </select>
+              </div>
+
+              <!-- Ảnh nền lá số (không áp dụng template API lyso — khóa theo is-lyso-locked) -->
+              <div class="fg">
+                <label>Ảnh nền lá số</label>
+                <select id="lasoBgSelect" onchange="onLasoBgSelectChange(this.value)"></select>
               </div>
 
               <!-- Font family -->

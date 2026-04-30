@@ -18,20 +18,13 @@
     return `${day}/${m}/${y}`;
   }
 
-  function parseDateInput(id) {
-    const v = (document.getElementById(id)?.value || '').trim();
-    if (!v) return null;
-    let d = 0; let m = 0; let y = 0;
-    if (v.includes('/')) {
-      const p = v.split('/').map(Number);
-      if (p.length === 3) { d = p[0]; m = p[1]; y = p[2]; }
-    } else if (v.includes('-')) {
-      const p = v.split('-').map(Number);
-      if (p.length === 3) { y = p[0]; m = p[1]; d = p[2]; }
-    }
-    if (!y || !m || !d) return null;
-    const dt = new Date(y, m - 1, d);
-    if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null;
+  function parseSearchStartDate() {
+    const dd = parseInt(document.getElementById('searchFromDD')?.value, 10);
+    const mm = parseInt(document.getElementById('searchFromMM')?.value, 10);
+    const yy = parseInt(document.getElementById('searchFromYY')?.value, 10);
+    if (!Number.isFinite(dd) || !Number.isFinite(mm) || !Number.isFinite(yy)) return null;
+    const dt = new Date(yy, mm - 1, dd);
+    if (dt.getFullYear() !== yy || dt.getMonth() !== mm - 1 || dt.getDate() !== dd) return null;
     return dt;
   }
 
@@ -124,11 +117,11 @@
   }
   function problemMessage(problemId, dayCount) {
     switch (problemId) {
-      case 'missing-from': return 'Vui lòng nhập Từ ngày DL.';
-      case 'missing-to': return 'Vui lòng nhập Đến ngày DL.';
-      case 'invalid-from': return 'Từ ngày DL không hợp lệ. Dùng dd/mm/yyyy hoặc yyyy-mm-dd.';
-      case 'invalid-to': return 'Đến ngày DL không hợp lệ. Dùng dd/mm/yyyy hoặc yyyy-mm-dd.';
-      case 'reversed-range': return 'Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.';
+      case 'missing-from': return 'Vui lòng nhập đủ Ngày / Tháng / Năm (DL) bắt đầu.';
+      case 'missing-span': return 'Vui lòng nhập số ngày (tối thiểu 1).';
+      case 'invalid-from': return 'Ngày bắt đầu (DL) không hợp lệ.';
+      case 'invalid-span': return 'Số ngày không hợp lệ (số nguyên từ 1 đến ' + SEARCH_MAX_DAYS + ').';
+      case 'reversed-range': return 'Khoảng ngày không hợp lệ.';
       case 'missing-main-stars': return 'Hãy chọn ít nhất 1 tổ hợp chính tinh cung Mệnh.';
       case 'invalid-gender': return 'Giới tính không hợp lệ. Vui lòng chọn Nam hoặc Nữ.';
       case 'range-too-large': return `Khoảng ngày quá lớn (${dayCount} ngày). Vui lòng thu hẹp <= ${SEARCH_MAX_DAYS} ngày.`;
@@ -146,17 +139,24 @@
   }
   function validateSearchConfig(cfg) {
     const problems = [];
-    if (!cfg.rawFrom) problems.push('missing-from');
+    const dd = (document.getElementById('searchFromDD')?.value || '').trim();
+    const mm = (document.getElementById('searchFromMM')?.value || '').trim();
+    const yy = (document.getElementById('searchFromYY')?.value || '').trim();
+    if (!dd || !mm || !yy) problems.push('missing-from');
     else if (!cfg.from) problems.push('invalid-from');
-    if (!cfg.rawTo) problems.push('missing-to');
-    else if (!cfg.to) problems.push('invalid-to');
+
+    const spanRaw = (document.getElementById('searchSpanDays')?.value || '').trim();
+    if (!spanRaw) problems.push('missing-span');
+    else if (!Number.isFinite(cfg.spanDays) || cfg.spanDays < 1) problems.push('invalid-span');
+    else if (cfg.spanDays > SEARCH_MAX_DAYS) problems.push('range-too-large');
+
     if (cfg.from && cfg.to && cfg.from > cfg.to) problems.push('reversed-range');
     if (!cfg.chinhValues.length) problems.push('missing-main-stars');
     if (!['nam', 'nu'].includes(cfg.gt)) problems.push('invalid-gender');
+
     let dayCount = 0;
-    if (cfg.from && cfg.to && cfg.from <= cfg.to) {
+    if (cfg.from && cfg.to && cfg.from <= cfg.to && cfg.spanDays >= 1) {
       dayCount = Math.floor((cfg.to - cfg.from) / (24 * 3600 * 1000)) + 1;
-      if (dayCount > SEARCH_MAX_DAYS) problems.push('range-too-large');
     }
     return { problems, dayCount };
   }
@@ -314,11 +314,21 @@
   }
 
   function currentSearchConfig() {
+    const from = parseSearchStartDate();
+    const spanRaw = (document.getElementById('searchSpanDays')?.value || '').trim();
+    const spanNum = parseInt(spanRaw, 10);
+    let to = null;
+    let spanDays = 0;
+    if (Number.isFinite(spanNum) && spanNum >= 1 && from) {
+      spanDays = spanNum;
+      to = new Date(from.getTime());
+      to.setDate(to.getDate() + spanNum - 1);
+    }
     return {
-      rawFrom: (document.getElementById('searchFromDate')?.value || '').trim(),
-      rawTo: (document.getElementById('searchToDate')?.value || '').trim(),
-      from: parseDateInput('searchFromDate'),
-      to: parseDateInput('searchToDate'),
+      rawFrom: spanRaw,
+      from,
+      to,
+      spanDays,
       gt: document.getElementById('searchGt')?.value || 'nam',
       chinhValues: selectedMainValues(),
     };
@@ -495,9 +505,10 @@
     _searchInitDone = true;
     const now = new Date();
     const from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const to = plusDay(plusDay(plusDay(from)));
-    document.getElementById('searchFromDate').value = dmy(from);
-    document.getElementById('searchToDate').value = dmy(to);
+    document.getElementById('searchFromDD').value = String(from.getDate());
+    document.getElementById('searchFromMM').value = String(from.getMonth() + 1);
+    document.getElementById('searchFromYY').value = String(from.getFullYear());
+    document.getElementById('searchSpanDays').value = '4';
     const gt = document.getElementById('gt')?.value || 'nam';
     document.getElementById('searchGt').value = gt;
     const listWrap = document.getElementById('searchChinhTinhList');

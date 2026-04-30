@@ -403,14 +403,19 @@
       position: relative;
     }
 
+    /* Mặc định ẩn; chỉ hiện khi chọn «Âm Dương vector» (#lasoWrap.laso-center-decor-yinyang) */
     .center-bg {
       position: absolute;
       inset: 0;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       pointer-events: none;
       z-index: 0;
+    }
+
+    #lasoWrap.laso-center-decor-yinyang .center-bg {
+      display: flex;
     }
 
     .center-bg svg {
@@ -422,6 +427,33 @@
     .center>*:not(.center-bg) {
       position: relative;
       z-index: 1;
+    }
+
+    /* Ảnh nền ô trung tâm: --laso-center-bg trên #lasoWrap; rộng tối đa = 1 cột lưới (trùng .grid) */
+    .center::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: min(100%, 4.3cm);
+      max-width: 4.3cm;
+      z-index: 0;
+      background-image: var(--laso-center-bg, none);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center center;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #lasoWrap.laso-center-wallpaper-on .center::before {
+      opacity: 0.5;
+    }
+
+    #lasoWrap.laso-center-wallpaper-on .center-bg {
+      display: none;
     }
 
     .c-name {

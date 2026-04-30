@@ -22,6 +22,102 @@
       '--mono-mode': '0',
     };
 
+    const LASO_BG_STORAGE_KEY = 'tuviLasoBgChoice';
+    /** Value trong `<select>` cho SVG Âm Dương (không phải tên file) */
+    const LASO_BG_YINYANG = '__yinyang__';
+    /** Đường dẫn tương đối từ `index.html`; ảnh đặt trong `resources/background-laso/` */
+    const LASO_BG_DIR = 'resources/background-laso';
+    /**
+     * Danh sách tên file đầy đủ trên đĩa. Label trong CFG = tên không đuôi extension.
+     */
+    const LASO_BG_FILES = [
+      'nen1.jpg',
+      'nen2.jpg',
+      'nen3.jpg',
+      'nen4.jpg',
+      'nen5.jpg',
+    ];
+
+    function lasoBgSafeBasename(name) {
+      const b = String(name ?? '').trim();
+      if (!b || b.includes('/') || b.includes('\\') || b.includes('..')) return '';
+      return b;
+    }
+
+    /** Hiển thị trong dropdown: bỏ đuôi `.jpg` / `.png` … */
+    function lasoBgDisplayLabel(filename) {
+      const s = String(filename ?? '').trim();
+      const noExt = s.replace(/\.[^/.]+$/, '');
+      return noExt || s;
+    }
+
+    function resolveLasoBgRelPath(key) {
+      const base = lasoBgSafeBasename(key);
+      if (!base || !LASO_BG_FILES.includes(base)) return '';
+      return `${LASO_BG_DIR}/${base}`;
+    }
+
+    /**
+     * URL tuyệt đối theo trang hiện tại. Biến CSS `--laso-center-bg` được dùng trong `grid.css`;
+     * nếu để path tương đối, trình duyệt resolve `url()` theo file CSS → sai (`src/css/resources/...`).
+     */
+    function lasoBgAbsoluteUrlForCss(relPath) {
+      try {
+        const u = new URL(relPath, window.location.href);
+        u.searchParams.set('v', String(Date.now()));
+        return u.href;
+      } catch (_) {
+        return `${relPath}?v=${Date.now()}`;
+      }
+    }
+
+    function populateLasoBgSelect() {
+      const sel = document.getElementById('lasoBgSelect');
+      if (!sel) return;
+      const prev = sel.value;
+      sel.innerHTML = '';
+      const opt0 = document.createElement('option');
+      opt0.value = '';
+      opt0.textContent = 'Không nền';
+      sel.appendChild(opt0);
+      const optYin = document.createElement('option');
+      optYin.value = LASO_BG_YINYANG;
+      optYin.textContent = 'Âm Dương vector';
+      sel.appendChild(optYin);
+      LASO_BG_FILES.forEach((file) => {
+        const o = document.createElement('option');
+        o.value = file;
+        o.textContent = lasoBgDisplayLabel(file);
+        sel.appendChild(o);
+      });
+      if (prev && [...sel.options].some((op) => op.value === prev)) sel.value = prev;
+    }
+
+    function applyLasoBackgroundChoice(key) {
+      const wrap = document.getElementById('lasoWrap');
+      if (!wrap) return;
+      const k = String(key ?? '').trim();
+      wrap.classList.remove('laso-center-wallpaper-on', 'laso-center-decor-yinyang');
+      wrap.style.removeProperty('--laso-center-bg');
+      if (!k) return;
+      if (k === LASO_BG_YINYANG) {
+        wrap.classList.add('laso-center-decor-yinyang');
+        return;
+      }
+      const rel = resolveLasoBgRelPath(k);
+      if (!rel) return;
+      wrap.classList.add('laso-center-wallpaper-on');
+      const abs = lasoBgAbsoluteUrlForCss(rel);
+      wrap.style.setProperty('--laso-center-bg', `url(${JSON.stringify(abs)})`);
+    }
+
+    function onLasoBgSelectChange(val) {
+      try {
+        localStorage.setItem(LASO_BG_STORAGE_KEY, val === undefined || val === null ? '' : String(val));
+      } catch (_) {}
+      applyLasoBackgroundChoice(val);
+    }
+
     const TEMPLATES = {
       classic: DEFAULT_CONFIG,
       mono: {
@@ -177,6 +273,7 @@
         return;
       }
       toggleLysoApiMode(false);
+      applyLasoBackgroundChoice(document.getElementById('lasoBgSelect')?.value ?? '');
       // Re-render để áp màu mới vì màu ngũ hành là inline style trong DOM
       if (_lastJson) {
         const gridEl = document.getElementById('grid');
@@ -230,12 +327,17 @@
       setLysoTemplateLock(false);
       toggleLysoApiMode(false);
       document.querySelectorAll('#cfgPanel select:not([data-var])').forEach(el => el.selectedIndex = 0);
+      try { localStorage.removeItem(LASO_BG_STORAGE_KEY); } catch (_) {}
+      applyLasoBackgroundChoice('');
       if (_lastJson) {
         const gridEl = document.getElementById('grid');
         TUVI_RENDER.render(_lastJson, gridEl);
         requestAnimationFrame(() => { scaleGrid(); TUVI_RENDER.reRenderPills(); });
       }
     }
+
+    window.applyLasoBackgroundChoice = applyLasoBackgroundChoice;
+    window.onLasoBgSelectChange = onLasoBgSelectChange;
 
     window.isLysoTemplateActive = isLysoTemplateActive;
     window.renderLysoFromCurrentInputs = renderLysoFromCurrentInputs;
@@ -263,6 +365,18 @@
         res.textContent = '⚠ Ngày không hợp lệ';
       }
     }
+
+    (function initLasoBgFromStorage() {
+      populateLasoBgSelect();
+      const sel = document.getElementById('lasoBgSelect');
+      if (!sel) return;
+      try {
+        const saved = localStorage.getItem(LASO_BG_STORAGE_KEY);
+        if (saved !== null && [...sel.options].some(o => o.value === saved)) sel.value = saved;
+        else if (saved) try { localStorage.removeItem(LASO_BG_STORAGE_KEY); } catch (_) {}
+      } catch (_) {}
+      applyLasoBackgroundChoice(sel.value);
+    })();
 
     // Gắn auto-convert khi nhập dương lịch
     ['ngayDL', 'thangDL', 'namDL'].forEach(id => {
