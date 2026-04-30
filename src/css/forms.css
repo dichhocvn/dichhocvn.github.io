@@ -407,3 +407,66 @@
         font-size: 9px;
       }
     }
+
+    /* Mobile: ngày / tháng / giờ dùng select; input gốc vẫn giữ để logic & desktop */
+    .form-mobile-select {
+      display: none;
+    }
+
+    .gio-mobile-row {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .gio-mobile-row select {
+      flex: 1;
+      min-width: 0;
+      padding: 5px 7px;
+      border: 1px solid #c8b88a;
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: inherit;
+      background: #fdfaf4;
+      color: #1a1008;
+    }
+
+    .gio-colon {
+      font-weight: bold;
+      color: #4a2e08;
+      flex: 0 0 auto;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    body[data-layout="mobile"] .form-mobile-select {
+      display: block;
+    }
+
+    body[data-layout="mobile"] .gio-mobile-row {
+      display: flex;
+    }
+
+    body[data-layout="mobile"] #formWrap .fg {
+      position: relative;
+    }
+
+    body[data-layout="mobile"] .form-desktop-number-input {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      border: 0 !important;
+    }
+
+    body[data-layout="desktop"] .form-mobile-select {
+      display: none !important;
+    }
+
+    body[data-layout="desktop"] .gio-mobile-row {
+      display: none !important;
+    }

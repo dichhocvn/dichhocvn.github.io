@@ -6,7 +6,7 @@
 - Render la so tu JSON (xem han chi active khi co nam cu the; center hien Nam han da chon) -> `src/js/render/tuvi-render.js` + `src/js/render/tuvi-render-modules.js` (bao gom pill engine + center renderer)
 - Rule parser/matcher + dialog rule -> `src/js/render/tuvi-render-modules.js` + `src/js/rules/rules-data.js`
 - Sua/noi dung rule theo cung -> `src/rules/*.txt` (nguon editable) va dong bo sang `src/js/rules/rules-data.js`
-- Doi Duong<->Am, helper lich -> `src/js/features/lunar-calendar.js`
+- Doi Duong<->Am, helper lich, validate ngay DL/AL truoc Lập lá số + dialog `#lapSoValidationOverlay` -> `src/js/features/lunar-calendar.js` + `src/js/features/lap-so-dialog.js` (`lapLaSo` trong `src/js/app/controller-core.js`)
 - Nhan mui ten gio + nhay ngay/thang/nam AL + init ngay/gio hien tai AL/DL (gio nav doc lap voi xem han) -> `src/js/features/gio-controls.js`
 - Nam xem han -> `src/js/features/han-controls.js`
 - Prompt export/JSON export -> `src/js/features/prompt-export.js`
@@ -15,7 +15,7 @@
 - Chatbot (desktop đang ẩn; nút dưới cùng cột trái hiện trạng thái disabled, chưa cho bật lại) -> `src/js/features/chatbot.js`
 - CSS layout co ban (toàn page padding 2px; desktop khi chatbot ẩn thì formArea chiếm full chiều cao còn lại) -> `src/css/base.css`
 - CSS chat -> `src/css/chat.css`
-- CSS form/tab/grid wrapper (search nav class-based + responsive + margin-bottom 2px cho grid mobile; tab panel full-height trên desktop khi chatbot ẩn; tab bar sticky trên desktop khi cuộn form) -> `src/css/forms.css`
+- CSS form/tab/grid wrapper (search nav class-based + responsive + margin-bottom 2px cho grid mobile; mobile chọn ngày/tháng/giờ bằng select; tab panel full-height trên desktop khi chatbot ẩn; tab bar sticky trên desktop khi cuộn form) -> `src/css/forms.css` + `src/js/features/form-mobile-pickers.js`
 - CSS grid cung/sao/highlight/pill (han-nav class-based + responsive; tăng z-index khu chính tinh, chỉnh header vị trí 1/3 cân nhau để vị trí 2 centered; cát tinh cho phép overflow, sao hung vị trí 6 căn phải theo cột hung, một dòng và canh mép phải ổn định để không đè viền) -> `src/css/grid.css`
 - CSS modal prompt/rule -> `src/css/modals.css`
 
