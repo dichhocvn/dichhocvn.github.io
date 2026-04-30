@@ -203,6 +203,15 @@
     if (total <= 0) return 50;
     return Math.round((catCount / total) * 100);
   }
+  function compareSearchResultRank(a, b) {
+    if (b.catKhiScore !== a.catKhiScore) return b.catKhiScore - a.catKhiScore;
+    const deltaA = (a.catCountTarget || 0) - (a.hungCountTarget || 0);
+    const deltaB = (b.catCountTarget || 0) - (b.hungCountTarget || 0);
+    if (deltaB !== deltaA) return deltaB - deltaA;
+    const ta = new Date(a.solar.yy, a.solar.mm - 1, a.solar.dd).getTime();
+    const tb = new Date(b.solar.yy, b.solar.mm - 1, b.solar.dd).getTime();
+    return ta - tb;
+  }
 
   function tuanTrietFlagsAtMenh(laso, menhChi) {
     const triet = laso.meta.viTriTriet || [];
@@ -439,12 +448,7 @@
         }
       }
 
-      hits.sort((a, b) => {
-        if (b.catKhiScore !== a.catKhiScore) return b.catKhiScore - a.catKhiScore;
-        const ta = new Date(a.solar.yy, a.solar.mm - 1, a.solar.dd).getTime();
-        const tb = new Date(b.solar.yy, b.solar.mm - 1, b.solar.dd).getTime();
-        return ta - tb;
-      });
+      hits.sort(compareSearchResultRank);
 
       window._searchResults = hits;
       renderResults(hits);
@@ -475,6 +479,7 @@
     document.getElementById('gt').value = row.gender;
     if (typeof convertDL === 'function') convertDL();
     if (typeof syncGioToGioXem === 'function') syncGioToGioXem();
+    if (typeof syncMobilePickersFromInputs === 'function') syncMobilePickersFromInputs();
     if (typeof isLysoTemplateActive === 'function' && isLysoTemplateActive() && typeof renderLysoFromSearchResult === 'function') {
       try {
         renderLysoFromSearchResult(row);
@@ -562,4 +567,5 @@
   };
   window.closeSearchValidationDialog = closeSearchValidationDialog;
   window.clearSearchResultsState = clearSearchResultsState;
+  window._compareSearchResultRank = compareSearchResultRank;
 })();

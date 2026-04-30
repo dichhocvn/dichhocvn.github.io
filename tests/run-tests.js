@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 const suites = [
   ...require("./calendar.test"),
+  ...require("./date-validation.test"),
   ...require("./logic.test"),
   ...require("./stars.test"),
   ...require("./search-laso-counts.test"),
+  ...require("./search-laso-sort.test"),
   ...require("./ui-state.test"),
   ...require("./laso-flow.test"),
 ];

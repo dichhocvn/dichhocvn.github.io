@@ -383,6 +383,7 @@
         document.getElementById('ngay').value = lunar.ngay;
         document.getElementById('thang').value = lunar.thang;
         document.getElementById('nam').value = lunar.nam;
+        if (typeof syncMobilePickersFromInputs === 'function') syncMobilePickersFromInputs();
       } catch (e) {
         res.textContent = '⚠ Ngày không hợp lệ';
       }
