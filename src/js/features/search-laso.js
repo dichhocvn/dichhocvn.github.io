@@ -475,7 +475,6 @@
     document.getElementById('gt').value = row.gender;
     if (typeof convertDL === 'function') convertDL();
     if (typeof syncGioToGioXem === 'function') syncGioToGioXem();
-    if (typeof syncMobilePickersFromInputs === 'function') syncMobilePickersFromInputs();
     if (typeof isLysoTemplateActive === 'function' && isLysoTemplateActive() && typeof renderLysoFromSearchResult === 'function') {
       try {
         renderLysoFromSearchResult(row);

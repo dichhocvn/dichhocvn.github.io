@@ -8,21 +8,6 @@
       const errEl = document.getElementById('err');
       errEl.style.display = 'none';
 
-      const tab = window._currentTab || 'AL';
-      if (typeof validateLapSoDateInputs === 'function') {
-        const check = validateLapSoDateInputs(tab);
-        if (check && !check.ok) {
-          if (typeof showLapSoValidationDialog === 'function') {
-            showLapSoValidationDialog(check.message);
-          }
-          return;
-        }
-      }
-
-      const lysoActive = typeof isLysoTemplateActive === 'function' && isLysoTemplateActive();
-      if (tab === 'DL' && typeof convertDL === 'function') convertDL();
-      else if (lysoActive && tab !== 'DL' && typeof syncDlInputsFromAmLich === 'function') syncDlInputsFromAmLich();
-
       if (typeof isLysoTemplateActive === 'function' && isLysoTemplateActive()) {
         try {
           if (typeof renderLysoFromCurrentInputs === 'function' && renderLysoFromCurrentInputs()) {

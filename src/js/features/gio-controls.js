@@ -53,7 +53,6 @@
 
       gi.value = fmtHHMM(newH, t.m);
       syncGioToGioXem();
-      if (typeof syncMobilePickersFromInputs === 'function') syncMobilePickersFromInputs();
       lapLaSo();
     }
 

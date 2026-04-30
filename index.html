@@ -62,24 +62,20 @@
             </div>
             <!-- Âm lịch fields -->
             <div class="fg al-field"><label>Ngày ÂL</label>
-              <select id="ngayMob" class="form-mobile-select" aria-label="Ngày âm lịch"></select>
-              <input id="ngay" type="number" min="1" max="30" value="5" class="form-desktop-number-input">
+              <input id="ngay" type="number" min="1" max="30" value="5">
             </div>
             <div class="fg al-field"><label>Tháng ÂL</label>
-              <select id="thangMob" class="form-mobile-select" aria-label="Tháng âm lịch"></select>
-              <input id="thang" type="number" min="1" max="12" value="9" class="form-desktop-number-input">
+              <input id="thang" type="number" min="1" max="12" value="9">
             </div>
             <div class="fg al-field"><label>Năm ÂL</label>
               <input id="nam" type="number" value="1993">
             </div>
             <!-- Dương lịch fields -->
             <div class="fg dl-field" style="display:none"><label>Ngày DL</label>
-              <select id="ngayDLMob" class="form-mobile-select" aria-label="Ngày dương lịch"></select>
-              <input id="ngayDL" type="number" min="1" max="31" value="11" class="form-desktop-number-input">
+              <input id="ngayDL" type="number" min="1" max="31" value="11">
             </div>
             <div class="fg dl-field" style="display:none"><label>Tháng DL</label>
-              <select id="thangDLMob" class="form-mobile-select" aria-label="Tháng dương lịch"></select>
-              <input id="thangDL" type="number" min="1" max="12" value="11" class="form-desktop-number-input">
+              <input id="thangDL" type="number" min="1" max="12" value="11">
             </div>
             <div class="fg dl-field" style="display:none"><label>Năm DL</label>
               <input id="namDL" type="number" value="1993">
@@ -90,12 +86,7 @@
             </div>
 
             <div class="fg"><label>Giờ sinh (HH:MM)</label>
-              <div class="gio-mobile-row" role="group" aria-label="Giờ sinh">
-                <select id="gioHourMob" aria-label="Giờ"></select>
-                <span class="gio-colon" aria-hidden="true">:</span>
-                <select id="gioMinuteMob" aria-label="Phút"></select>
-              </div>
-              <input id="gio" type="text" value="04:00" class="form-desktop-number-input" oninput="syncGioToGioXem()">
+              <input id="gio" type="text" value="04:00" oninput="syncGioToGioXem()">
             </div>
             <div class="fg"><label>Giới tính</label>
               <select id="gt">
@@ -499,16 +490,6 @@
     </div>
   </div>
 
-  <div class="rule-overlay" id="lapSoValidationOverlay" onclick="closeLapSoValidationDialog(event)">
-    <div class="rule-modal" style="width:min(560px,94vw);">
-      <div class="rule-modal-header">
-        <div class="rule-modal-title">Không thể lập lá số</div>
-        <button class="rule-modal-close" onclick="closeLapSoValidationDialog()">✕</button>
-      </div>
-      <div class="rule-modal-body" id="lapSoValidationBody" style="white-space:pre-wrap;"></div>
-    </div>
-  </div>
-
   <!-- html2canvas để lưu ảnh -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -527,13 +508,11 @@
   <script src="src/js/features/layout-resize.js"></script>
   <script src="src/js/features/chatbot.js"></script>
   <script src="src/js/features/lunar-calendar.js"></script>
-  <script src="src/js/features/lap-so-dialog.js"></script>
   <script src="src/js/features/search-laso.js"></script>
   <script src="src/js/features/tab-switching.js"></script>
   <script src="src/js/features/theme-config.js"></script>
   <script src="src/js/features/han-controls.js"></script>
   <script src="src/js/features/gio-controls.js"></script>
-  <script src="src/js/features/form-mobile-pickers.js"></script>
   <script src="src/js/features/prompt-export.js"></script>
 
 

@@ -16,9 +16,6 @@ loadScript(path.join(ROOT, "src/js/core/logic.js"), ["TUVI_LOGIC"]);
 loadScript(path.join(ROOT, "src/js/features/lunar-calendar.js"), [
   "solar2Lunar",
   "lunar2Solar",
-  "validateSolarDateInput",
-  "validateAmLichDateInput",
-  "daysInSolarMonth",
 ]);
 
 function getAllStars(lasoJson) {
@@ -35,8 +32,5 @@ module.exports = {
   TUVI_LOGIC,
   solar2Lunar,
   lunar2Solar,
-  validateSolarDateInput,
-  validateAmLichDateInput,
-  daysInSolarMonth,
   getAllStars,
 };
